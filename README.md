@@ -1,68 +1,83 @@
 # StadiumOps AI - FIFA World Cup 2026 Command Center
 
-### Live Production Deployment
-- **Vercel Production URL**: [https://stadiumops-ai.vercel.app](https://stadiumops-ai.vercel.app)
-- **Local Dev URL**: [http://localhost:5173/](http://localhost:5173/)
+StadiumOps AI is an AI-assisted operational decision-support platform that continuously evaluates stadium telemetry to generate explainable recommendations for crowd management, safety, and resource allocation.
+
+## Live Demo
+👉 **[https://stadiumops-ai.vercel.app](https://stadiumops-ai.vercel.app)**
 
 ---
 
-## 1. Project Overview
+## 1. Project Screenshots
+*Tip: Place your screenshots inside `src/assets/` named exactly as below to render them in your repository.*
 
-StadiumOps AI is a production-grade, real-time Operational Decision Support and Crowd Management platform built for FIFA World Cup 2026 organizers and stadium operations managers. It integrates telemetry logs, CSV parsing pipelines, and Google's Gemini models to provide actionable, explainable crowd-control decisions.
-
-Unlike standard query-based chatbots, StadiumOps AI functions as an autonomous decision support console, evaluating multi-dimensional stadium telemetry to highlight bottlenecks, trigger emergency responses, and simulate operational outcomes.
-
----
-
-## 2. Key Features
-
-- **Ingress Telemetry Coordinator**: Real-time evaluation of gate queue wait times, turnstile capacity load ratios, and perimeter traffic parameters.
-- **Explainable Decision Engine**: Integrates Google Gemini 1.5 Flash to generate context-aware dispatches, accompanied by a dynamic breakdown of the exact metrics that triggered the warning.
-- **Closed-Loop Outcome Simulator**: Approving an AI recommendation dynamically resolves wait times, clears incidents, and routes crowd traffic, updating KPIs and charts in real-time.
-- **Pre-Normalization CSV Preview**: Validates custom CSV uploads row-by-row, catching negative parameters or invalid timestamps, and displaying structural grids before committing to AI analysis.
-- **Presentation Demo Mode**: A one-click simulation script that automates scenario loading, anomaly triggers, approvals, and report generation for judging presentations.
-- **Offline LocalDb Failover**: Integrates Firebase Cloud Firestore with automatic local storage failovers for full standalone compatibility.
+![Dashboard Command Deck](src/assets/hero.png)
+*Figure 1: Main command deck featuring dynamic Recharts scrollers, status grids, and decision cards.*
 
 ---
 
-## 3. System Architecture
+## 2. Project Highlights
 
-The project is structured using clean, modular architectural layers:
+✔ **Live Telemetry Simulation**: Drifts metrics every 8 seconds to mimic a real digital twin.
+✔ **Explainable AI (XAI)**: Shows exact metric triggers (e.g. wait times, alarms) inside decision rationales.
+✔ **Closed-Loop Outcome Simulation**: Drains queues, redirects flow, and clears active incidents instantly on approval.
+✔ **High-Reliability CSV Validation**: Captures, lists, and displays validation warning logs before ingestion.
+✔ **Firebase + Offline Failover**: Uses Firestore logs, falling back to `localStorage` automatically.
+✔ **One-Click Presentation Mode**: Runs a complete automated storyboard in one click for judging.
+✔ **Vercel Static Hosting**: Fast production builds with zero-config serverless deployments.
+
+---
+
+## 3. Core Features
+
+| Feature | Description |
+| :--- | :--- |
+| **Live Telemetry** | Simulates realistic operational drift (Queues, Occupancy, Parking, Transit) every 8 seconds. |
+| **Explainable AI** | Opens a cognitive panel mapping the specific metrics that triggered each AI recommendation. |
+| **Outcome Simulation** | Applies approved actions in the telemetry coordinates and models queue reduction outcomes. |
+| **CSV Validation** | Parses spreadsheet formats, rejects errors (negative values, bad times), and normalizes rows. |
+| **Report Export** | Compiles current KPIs, recommendations, reasoning, timelines, and audit logs into a text report. |
+| **Demo Mode** | Automates ingestion, AI dispatches, approvals, outcomes, and report downloads in one click. |
+
+---
+
+## 4. System Architecture
+
+The application decouples parsing, state coordinating, and cognitive reasoning into distinct layers:
+
+```
+    [ CSV / Synthetic Scenario ]
+                 │
+                 ▼
+          [ CSV Validator ]
+                 │
+                 ▼
+         [ Data Normalizer ]
+                 │
+                 ▼
+      [ Recommendation Engine ]
+           │           │
+           ▼           ▼
+      [ Gemini ]  [ Simulation ]
+           │
+           ▼
+     [ React Dashboard ]
+           │
+           ▼
+     [ Reports & Audit ]
+```
+
 - **Frontend Core**: React (v19) + Vite (v8) + Tailwind CSS (v4) with native `@tailwindcss/vite` integration.
-- **Routing Shell**: Client-side state routing using React Router.
-- **Telemetry Charts**: Responsive visualization cards rendered via Recharts.
 - **Cognitive Layer**: Google Gemini REST integration with direct client-side fetch failovers to prevent browser bundle packaging locks.
+- **Gemini Fallback (Simulation Mode)**: If no Gemini API key is configured in the environment, StadiumOps AI automatically switches to a mathematically consistent Simulation Mode, allowing the application to remain fully functional for demonstrations and evaluation.
 - **Database Layer**: Cloud Firestore (saving datasets, recommendations, timeline logs) with `localStorage` backup buffers for standalone offline capabilities.
 
-```mermaid
-graph TD
-    A[Synthetic Selection / CSV File / Form] --> B[parseAndValidateCSV]
-    B --> C{Validation Check}
-    C -- Invalid Rows --> D[Rejection Warning Log Table]
-    C -- Valid Rows --> E[normalizeStadiumData]
-    E --> F[Normalized JSON Snapshot]
-    F --> G[saveDataset to Firestore]
-    F --> H[generateRecommendations via Gemini]
-    H --> I[Dynamic Operational Decision Cards]
-    I --> J[Approval / Rejection Triggers]
-    J --> K[Update Firestore & Append Timeline Log]
-```
-
 ---
 
-## 4. Technical Stack & Project Structure
+## 5. Project Folder Structure
 
-### Tech Stack
-- **Framework**: React 19, Vite 8, React Router v6
-- **Styling**: Tailwind CSS v4
-- **Visualizations**: Recharts (dynamic area crowd charts, gate bar load levels)
-- **Icons**: Lucide React
-- **Cognitive Analysis**: Google Gemini 1.5 Flash REST API
-
-### Project Structure
 ```
 src/
-  assets/              # Vite graphics
+  assets/              # Vite graphics & screenshots
   components/
     common/            # Reusable UI containers (Card, Badge, Button)
     layout/            # Layout shells (Header, Sidebar, Shell)
@@ -76,7 +91,7 @@ src/
 
 ---
 
-## 5. Local Installation & How to Run
+## 6. Local Installation & How to Run
 
 ### Prerequisites
 - Node.js (v18 or higher)
@@ -107,15 +122,15 @@ src/
 
 ---
 
-## 6. Environment Variables
+## 7. Environment Variables
 
 The application reads from `.env` in the root:
-- `VITE_GEMINI_API_KEY`: Used to query the live Gemini 1.5 Flash model. If not present, the system defaults to simulation mode.
-- `VITE_FIREBASE_API_KEY`: Used to connect to Google Cloud Firestore. If missing, all databases route to `localStorage`.
+- `VITE_GEMINI_API_KEY`: Used to query the live Gemini 1.5 Flash model. If not present, the system defaults to Simulation Mode.
+- `VITE_FIREBASE_API_KEY`: Used to connect to Google Cloud Firestore. If missing, all databases route to local storage.
 
 ---
 
-## 7. Quick Demo Walkthrough
+## 8. Quick Demo Walkthrough
 
 Use the built-in demo to walk through a complete operational scenario:
 
@@ -127,8 +142,16 @@ Use the built-in demo to walk through a complete operational scenario:
 
 ---
 
-## 8. Future Improvements
+## 9. Tested & Supported Browsers
 
-- **Real-Time IoT Integrations**: Transition the data bus from CSV ingestion to real-time WebSockets subscribing to gate turnstile loops and camera passenger flows.
-- **Enhanced Predictive Analytics**: Integrate ML models to forecast pedestrian arrival surges up to 60 minutes in advance using shuttle schedule offsets.
-- **Multimodal AI Reasoning**: Allow operations managers to upload live drone/CCTV feed screenshots to analyze concourse blockages directly.
+- Chrome (v110 or higher)
+- Edge (v110 or higher)
+- Firefox (v110 or higher)
+- Safari (v16 or higher)
+
+---
+
+## 10. License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+*(Created for PromptWars 2026 Evaluation purposes only).*
