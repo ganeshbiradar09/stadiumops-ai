@@ -28,16 +28,16 @@ export const Header = () => {
         snap.incidents.forEach((inc, idx) => {
           alerts.push({ 
             id: `inc-${idx}`, 
-            text: `${inc.gate}: ${inc.incident}`, 
+            text: `${inc.gate}: ${inc.description}`, 
             type: 'error' 
           });
         });
         // Add gate wait time warnings
         snap.gates.forEach((g) => {
-          if (g.queueLength > 20) {
+          if (g.queueTime > 20) {
             alerts.push({ 
-              id: `queue-${g.gate}`, 
-              text: `${g.gate}: Heavy congestion wait times at ${g.queueLength} mins`, 
+              id: `queue-${g.name}`, 
+              text: `${g.name}: Heavy congestion wait times at ${g.queueTime} mins`, 
               type: 'warning' 
             });
           }
