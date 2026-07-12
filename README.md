@@ -1,5 +1,11 @@
 # StadiumOps AI - FIFA World Cup 2026 Command Center
 
+### Live Production Deployment
+- **Vercel Production URL**: [https://stadiumops-ai.vercel.app](https://stadiumops-ai.vercel.app)
+- **Local Dev URL**: [http://localhost:5173/](http://localhost:5173/)
+
+---
+
 StadiumOps AI is a production-grade, real-time Operational Decision Support and Crowd Management platform built for FIFA World Cup 2026 organizers and stadium operations managers. It integrates telemetry logs, CSV parsing pipelines, and Google's Gemini models to provide actionable, explainable crowd-control decisions.
 
 ---
