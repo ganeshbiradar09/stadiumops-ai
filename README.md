@@ -1,28 +1,39 @@
 # StadiumOps AI - FIFA World Cup 2026 Command Center
 
-StadiumOps AI is an AI-assisted operational decision-support platform that continuously evaluates stadium telemetry to generate explainable recommendations for crowd management, safety, and resource allocation.
+![React](https://img.shields.io/badge/React-19-blue)
+![Vite](https://img.shields.io/badge/Vite-8-purple)
+![Gemini](https://img.shields.io/badge/Google-Gemini-orange)
+![Firebase](https://img.shields.io/badge/Firebase-Firestore-yellow)
+![License](https://img.shields.io/badge/License-MIT-green)
+
+StadiumOps AI is an AI-assisted operational decision-support platform designed for FIFA World Cup 2026 scenarios that continuously evaluates stadium telemetry to generate explainable recommendations for crowd management, safety, and resource allocation.
 
 ## Live Demo
 👉 **[https://stadiumops-ai.vercel.app](https://stadiumops-ai.vercel.app)**
 
 ---
 
-## 1. Project Screenshots
+## Table of Contents
+- [Project Overview](#1-project-overview)
+- [Project Highlights](#2-project-highlights)
+- [Project Screenshots](#3-project-screenshots)
+- [Core Features](#4-core-features)
+- [System Architecture](#5-system-architecture)
+- [Project Folder Structure](#6-project-folder-structure)
+- [Local Installation & How to Run](#7-local-installation--how-to-run)
+- [Environment Variables](#8-environment-variables)
+- [Quick Demo Walkthrough](#9-quick-demo-walkthrough)
+- [Tested & Supported Browsers](#10-tested--supported-browsers)
+- [Acknowledgements](#11-acknowledgements)
+- [License](#12-license)
 
-![Dashboard Command Deck](src/assets/dashboard.png)
-*Figure 1: Main command deck showing real-time Recharts trends, status grids, and occupancy rates.*
+---
 
-![Operations Control Deck](src/assets/operations.png)
-*Figure 2: Access Point Control Deck supervising security wait times, turnstile loads, and marshal allocations.*
+## 1. Project Overview
 
-![Crowd Intelligence Command](src/assets/crowd.png)
-*Figure 3: Concourse Heatmap details showing crowd density indexes, Safety Risk ratings, and patrol counts.*
+StadiumOps AI is an operational decision-support platform designed for FIFA World Cup 2026 scenarios that evaluates multi-dimensional stadium telemetry to highlight bottlenecks, trigger emergency responses, and model crowd-control outcomes.
 
-![Operations Data Hub](src/assets/datasources.png)
-*Figure 4: Data Sources hub for CSV validation parsing warnings, manual override forms, and synthetic scenarios.*
-
-![Operational Reports Registry](src/assets/reports.png)
-*Figure 5: Reports compiler supporting GenAI Decision and Reasoning structured logs export.*
+*Note: Live operational telemetry is simulated for demonstration purposes. The architecture is designed so simulated inputs can be replaced with real-time IoT, ticketing, or sensor feeds without changing the recommendation workflow.*
 
 ---
 
@@ -32,13 +43,37 @@ StadiumOps AI is an AI-assisted operational decision-support platform that conti
 ✔ **Explainable AI (XAI)**: Shows exact metric triggers (e.g. wait times, alarms) inside decision rationales.
 ✔ **Closed-Loop Outcome Simulation**: Drains queues, redirects flow, and clears active incidents instantly on approval.
 ✔ **High-Reliability CSV Validation**: Captures, lists, and displays validation warning logs before ingestion.
-✔ **Firebase + Offline Failover**: Uses Firestore logs, falling back to `localStorage` automatically.
+✔ **Optional Firebase + Offline Failover**: Firestore enhances persistence. If Firebase credentials are absent, StadiumOps AI automatically falls back to local storage.
 ✔ **One-Click Presentation Mode**: Runs a complete automated storyboard in one click for judging.
 ✔ **Vercel Static Hosting**: Fast production builds with zero-config serverless deployments.
 
 ---
 
-## 3. Core Features
+## 3. Project Screenshots
+
+### Dashboard Command Deck
+![Dashboard](src/assets/dashboard.png)
+*Figure 1: Main command deck showing real-time Recharts trends, status grids, and occupancy rates.*
+
+### Operations Control Deck
+![Operations](src/assets/operations.png)
+*Figure 2: Access Point Control Deck supervising security wait times, turnstile loads, and marshal allocations.*
+
+### Crowd Intelligence Command
+![Crowd](src/assets/crowd.png)
+*Figure 3: Concourse Heatmap details showing crowd density indexes, Safety Risk ratings, and patrol counts.*
+
+### Operations Data Hub
+![Data Sources](src/assets/datasources.png)
+*Figure 4: Data Sources hub for CSV validation parsing warnings, manual override forms, and synthetic scenarios.*
+
+### Operational Reports Registry
+![Reports](src/assets/reports.png)
+*Figure 5: Reports compiler supporting GenAI Decision and Reasoning structured logs export.*
+
+---
+
+## 4. Core Features
 
 | Feature | Description |
 | :--- | :--- |
@@ -51,7 +86,7 @@ StadiumOps AI is an AI-assisted operational decision-support platform that conti
 
 ---
 
-## 4. System Architecture
+## 5. System Architecture
 
 The application decouples parsing, state coordinating, and cognitive reasoning into distinct layers:
 
@@ -79,30 +114,30 @@ The application decouples parsing, state coordinating, and cognitive reasoning i
 
 - **Frontend Core**: React (v19) + Vite (v8) + Tailwind CSS (v4) with native `@tailwindcss/vite` integration.
 - **Cognitive Layer**: Google Gemini REST integration with direct client-side fetch failovers to prevent browser bundle packaging locks.
-- **Gemini Fallback (Simulation Mode)**: If no Gemini API key is configured in the environment, StadiumOps AI automatically switches to a mathematically consistent Simulation Mode, allowing the application to remain fully functional for demonstrations and evaluation.
+- **Gemini Fallback (Simulation Mode)**: If no Gemini API key is configured in the environment, StadiumOps AI automatically switches to Simulation Mode, allowing the application to remain fully functional for demonstrations and evaluation.
 - **Database Layer**: Cloud Firestore (saving datasets, recommendations, timeline logs) with `localStorage` backup buffers for standalone offline capabilities.
 
 ---
 
-## 5. Project Folder Structure
+## 6. Project Folder Structure
 
 ```
-src/
-  assets/              # Vite graphics & screenshots
-  components/
-    common/            # Reusable UI containers (Card, Badge, Button)
-    layout/            # Layout shells (Header, Sidebar, Shell)
-    dashboard/         # Recharts visualizers & timeline modules
-  data/                # Synthetic CSV scenarios
-  pages/               # Page views (Dashboard, Operations, Crowd, Transit, Reports)
-  prompts/             # Version-controlled system prompt
-  services/            # API adapters (Gemini, Firebase, CSV Validator)
-  utils/               # Staging & drift stream engine
+src
+├── assets/            # Vite graphics & screenshots
+├── components/
+│   ├── common/        # Reusable UI containers (Card, Badge, Button)
+│   ├── dashboard/     # Recharts visualizers & timeline modules
+│   └── layout/        # Layout shells (Header, Sidebar, Shell)
+├── data/              # Synthetic CSV scenarios
+├── pages/             # Page views (Dashboard, Operations, Crowd, Transit, Reports)
+├── prompts/           # Version-controlled system prompt
+├── services/          # API adapters (Gemini, Firebase, CSV Validator)
+└── utils/             # Staging & drift stream engine
 ```
 
 ---
 
-## 6. Local Installation & How to Run
+## 7. Local Installation & How to Run
 
 ### Prerequisites
 - Node.js (v18 or higher)
@@ -133,7 +168,7 @@ src/
 
 ---
 
-## 7. Environment Variables
+## 8. Environment Variables
 
 The application reads from `.env` in the root:
 - `VITE_GEMINI_API_KEY`: Used to query the live Gemini 1.5 Flash model. If not present, the system defaults to Simulation Mode.
@@ -141,7 +176,7 @@ The application reads from `.env` in the root:
 
 ---
 
-## 8. Quick Demo Walkthrough
+## 9. Quick Demo Walkthrough
 
 Use the built-in demo to walk through a complete operational scenario:
 
@@ -153,7 +188,7 @@ Use the built-in demo to walk through a complete operational scenario:
 
 ---
 
-## 9. Tested & Supported Browsers
+## 10. Tested & Supported Browsers
 
 - Chrome (v110 or higher)
 - Edge (v110 or higher)
@@ -162,7 +197,18 @@ Use the built-in demo to walk through a complete operational scenario:
 
 ---
 
-## 10. License
+## 11. Acknowledgements
+
+- **Google Gemini**: Dynamic operational reasoning models
+- **React**: Frontend application architecture
+- **Vite**: Rapid asset compilation server
+- **Tailwind CSS**: Modern styled CSS theme configurations
+- **Firebase**: Multi-regional real-time database synchronization
+- **Recharts**: Responsive telemetry data visualization
+
+---
+
+## 12. License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 *(Created for PromptWars 2026 Evaluation purposes only).*
