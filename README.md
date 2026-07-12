@@ -15,17 +15,19 @@ StadiumOps AI is an AI-assisted operational decision-support platform designed f
 
 ## Table of Contents
 - [Project Overview](#1-project-overview)
-- [Project Highlights](#2-project-highlights)
-- [Project Screenshots](#3-project-screenshots)
-- [Core Features](#4-core-features)
-- [System Architecture](#5-system-architecture)
-- [Project Folder Structure](#6-project-folder-structure)
-- [Local Installation & How to Run](#7-local-installation--how-to-run)
-- [Environment Variables](#8-environment-variables)
-- [Quick Demo Walkthrough](#9-quick-demo-walkthrough)
-- [Tested & Supported Browsers](#10-tested--supported-browsers)
-- [Acknowledgements](#11-acknowledgements)
-- [License](#12-license)
+- [Challenge Vertical](#2-challenge-vertical)
+- [Assumptions](#3-assumptions)
+- [Project Highlights](#4-project-highlights)
+- [Project Screenshots](#5-project-screenshots)
+- [Core Features](#6-core-features)
+- [System Architecture](#7-system-architecture)
+- [Project Folder Structure](#8-project-folder-structure)
+- [Local Installation & How to Run](#9-local-installation--how-to-run)
+- [Environment Variables](#10-environment-variables)
+- [Quick Demo Walkthrough](#11-quick-demo-walkthrough)
+- [Tested & Supported Browsers](#12-tested--supported-browsers)
+- [Acknowledgements](#13-acknowledgements)
+- [License](#14-license)
 
 ---
 
@@ -33,16 +35,27 @@ StadiumOps AI is an AI-assisted operational decision-support platform designed f
 
 StadiumOps AI is an operational decision-support platform designed for FIFA World Cup 2026 scenarios that evaluates multi-dimensional stadium telemetry to highlight bottlenecks, trigger emergency responses, and model crowd-control outcomes.
 
-*Note: Live operational telemetry is simulated for demonstration purposes. The architecture is designed so simulated inputs can be replaced with real-time IoT, ticketing, or sensor feeds without changing the recommendation workflow.*
+---
 
-### Assumptions Made
-1. **IoT Sensor & API Availability**: It is assumed that the physical stadium is equipped with concourse optical counters, RFID ticketing turnstile checkpoints, parking lot loops, and shuttle GPS sensors that publish unified telemetry streams.
-2. **Decision Advisory Role**: The AI functions as an advisory decision support tool. Recommended dispatches require verification and approval by the Operations Manager before physical barriers are adjusted or patrol teams are deployed.
-3. **Connectivity Failovers**: When networks are offline or Gemini API keys are absent, the application is assumed to fall back onto its built-in client-side database proxy to maintain operational capability.
+## 2. Challenge Vertical
+
+**Smart Stadium Operations & Crowd Management**
+
+StadiumOps AI is designed as an AI-assisted operational command center for large-scale sporting events such as the FIFA World Cup 2026. The platform helps stadium operators monitor crowd movement, identify operational risks, and generate explainable recommendations for safety and resource allocation.
 
 ---
 
-## 2. Project Highlights
+## 3. Assumptions
+
+- Telemetry data is simulated for demonstration purposes.
+- Gemini API access is optional; the application falls back to Simulation Mode if unavailable.
+- CSV files follow the documented schema.
+- Firebase is optional and localStorage is used when credentials are absent.
+- The architecture is designed so simulated telemetry can be replaced with real-time IoT or WebSocket feeds.
+
+---
+
+## 4. Project Highlights
 
 ✔ **Live Telemetry Simulation**: Drifts metrics every 8 seconds to mimic a real digital twin.
 ✔ **Explainable AI (XAI)**: Shows exact metric triggers (e.g. wait times, alarms) inside decision rationales.
@@ -54,7 +67,7 @@ StadiumOps AI is an operational decision-support platform designed for FIFA Worl
 
 ---
 
-## 3. Project Screenshots
+## 5. Project Screenshots
 
 ### Dashboard Command Deck
 ![Dashboard](src/assets/dashboard.png)
@@ -78,7 +91,7 @@ StadiumOps AI is an operational decision-support platform designed for FIFA Worl
 
 ---
 
-## 4. Core Features
+## 6. Core Features
 
 | Feature | Description |
 | :--- | :--- |
@@ -91,7 +104,7 @@ StadiumOps AI is an operational decision-support platform designed for FIFA Worl
 
 ---
 
-## 5. System Architecture
+## 7. System Architecture
 
 The application decouples parsing, state coordinating, and cognitive reasoning into distinct layers:
 
@@ -124,7 +137,7 @@ The application decouples parsing, state coordinating, and cognitive reasoning i
 
 ---
 
-## 6. Project Folder Structure
+## 8. Project Folder Structure
 
 ```
 src
@@ -142,7 +155,7 @@ src
 
 ---
 
-## 7. Local Installation & How to Run
+## 9. Local Installation & How to Run
 
 ### Prerequisites
 - Node.js (v18 or higher)
@@ -173,7 +186,7 @@ src
 
 ---
 
-## 8. Environment Variables
+## 10. Environment Variables
 
 The application reads from `.env` in the root:
 - `VITE_GEMINI_API_KEY`: Used to query the live Gemini 1.5 Flash model. If not present, the system defaults to Simulation Mode.
@@ -181,7 +194,7 @@ The application reads from `.env` in the root:
 
 ---
 
-## 9. Quick Demo Walkthrough
+## 11. Quick Demo Walkthrough
 
 Use the built-in demo to walk through a complete operational scenario:
 
@@ -193,7 +206,7 @@ Use the built-in demo to walk through a complete operational scenario:
 
 ---
 
-## 10. Tested & Supported Browsers
+## 12. Tested & Supported Browsers
 
 - Chrome (v110 or higher)
 - Edge (v110 or higher)
@@ -202,7 +215,7 @@ Use the built-in demo to walk through a complete operational scenario:
 
 ---
 
-## 11. Acknowledgements
+## 13. Acknowledgements
 
 - **Google Gemini**: Dynamic operational reasoning models
 - **React**: Frontend application architecture
@@ -213,7 +226,7 @@ Use the built-in demo to walk through a complete operational scenario:
 
 ---
 
-## 12. License
+## 14. License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 *(Created for PromptWars 2026 Evaluation purposes only).*
