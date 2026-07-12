@@ -6,11 +6,26 @@
 
 ---
 
+## 1. Project Overview
+
 StadiumOps AI is a production-grade, real-time Operational Decision Support and Crowd Management platform built for FIFA World Cup 2026 organizers and stadium operations managers. It integrates telemetry logs, CSV parsing pipelines, and Google's Gemini models to provide actionable, explainable crowd-control decisions.
+
+Unlike standard query-based chatbots, StadiumOps AI functions as an autonomous decision support console, evaluating multi-dimensional stadium telemetry to highlight bottlenecks, trigger emergency responses, and simulate operational outcomes.
 
 ---
 
-## 1. System Architecture
+## 2. Key Features
+
+- **Ingress Telemetry Coordinator**: Real-time evaluation of gate queue wait times, turnstile capacity load ratios, and perimeter traffic parameters.
+- **Explainable Decision Engine**: Integrates Google Gemini 1.5 Flash to generate context-aware dispatches, accompanied by a dynamic breakdown of the exact metrics that triggered the warning.
+- **Closed-Loop Outcome Simulator**: Approving an AI recommendation dynamically resolves wait times, clears incidents, and routes crowd traffic, updating KPIs and charts in real-time.
+- **Pre-Normalization CSV Preview**: Validates custom CSV uploads row-by-row, catching negative parameters or invalid timestamps, and displaying structural grids before committing to AI analysis.
+- **Presentation Demo Mode**: A one-click simulation script that automates scenario loading, anomaly triggers, approvals, and report generation for judging presentations.
+- **Offline LocalDb Failover**: Integrates Firebase Cloud Firestore with automatic local storage failovers for full standalone compatibility.
+
+---
+
+## 3. System Architecture
 
 The project is structured using clean, modular architectural layers:
 - **Frontend Core**: React (v19) + Vite (v8) + Tailwind CSS (v4) with native `@tailwindcss/vite` integration.
@@ -18,21 +33,6 @@ The project is structured using clean, modular architectural layers:
 - **Telemetry Charts**: Responsive visualization cards rendered via Recharts.
 - **Cognitive Layer**: Google Gemini REST integration with direct client-side fetch failovers to prevent browser bundle packaging locks.
 - **Database Layer**: Cloud Firestore (saving datasets, recommendations, timeline logs) with `localStorage` backup buffers for standalone offline capabilities.
-
----
-
-## 2. Technical Stack
-
-- **Framework**: React 19, Vite 8, React Router v6
-- **Styling**: Tailwind CSS v4
-- **Visualizations**: Recharts (dynamic area crowd charts, gate bar load levels)
-- **Icons**: Lucide React
-- **API Connectivity**: Native REST fetch protocol to Google Gemini 1.5 Flash
-- **Database / Logs**: Firebase Cloud Firestore with automatic `localStorage` local failovers
-
----
-
-## 3. Ingestion & Validation Data Flow
 
 ```mermaid
 graph TD
@@ -48,39 +48,41 @@ graph TD
     J --> K[Update Firestore & Append Timeline Log]
 ```
 
-1. **Ingest**: Managers upload a CSV, select a synthetic dataset, or submit override incident logs.
-2. **Parse & Validate**: The `csvParser.js` runs validation rules:
-   - Rejects negative queue wait times.
-   - Rejects occupancy metrics above 100%.
-   - Rejects rows with missing Gate IDs.
-   - Rejects invalid HH:MM timestamps.
-   - Captures invalid rows in a Validation Warning Log.
-3. **Normalize**: `dataNormalizer.js` collapses valid records into a standardized JSON operational snapshot.
-4. **Cognitive Call**: The snapshot is processed by `geminiService.js` (with a local Simulation mode fallback if API keys are missing).
-5. **UI Feed**: Renders dynamic decision cards and updates the chronological Timeline Log.
+---
+
+## 4. Technical Stack & Project Structure
+
+### Tech Stack
+- **Framework**: React 19, Vite 8, React Router v6
+- **Styling**: Tailwind CSS v4
+- **Visualizations**: Recharts (dynamic area crowd charts, gate bar load levels)
+- **Icons**: Lucide React
+- **Cognitive Analysis**: Google Gemini 1.5 Flash REST API
+
+### Project Structure
+```
+src/
+  assets/              # Vite graphics
+  components/
+    common/            # Reusable UI containers (Card, Badge, Button)
+    layout/            # Layout shells (Header, Sidebar, Shell)
+    dashboard/         # Recharts visualizers & timeline modules
+  data/                # Synthetic CSV scenarios
+  pages/               # Page views (Dashboard, Operations, Crowd, Transit, Reports)
+  prompts/             # Version-controlled system prompt
+  services/            # API adapters (Gemini, Firebase, CSV Validator)
+  utils/               # Staging & drift stream engine
+```
 
 ---
 
-## 4. Prompt Engineering Strategy
-
-The system prompt is maintained separately in [stadiumSystemPrompt.js](file:///d:/PromptWar/Challenge-4/src/prompts/stadiumSystemPrompt.js) and implements version control headers.
-
-### Why Gemini is Used
-- **Low Latency Reasoning**: Rapid processing of multi-dimensional telemetry (crowd flow, weather forecasts, traffic delays, parking loads) to yield unified recommendations.
-- **Schema-Enforced JSON Output**: Configured with `responseMimeType: "application/json"` to ensure the model outputs valid JSON conforming to the structural parameters.
-
-### JSON Output Schema Specification
-Gemini is instructed to behave as a decision support engine, not a chatbot. Structured JSON is enforced to allow direct mapping of variables into React visual components (wait times, steward counts, safety risks).
-
----
-
-## 5. Local Setup Instructions
+## 5. Local Installation & How to Run
 
 ### Prerequisites
 - Node.js (v18 or higher)
 - npm (v9 or higher)
 
-### Installation
+### Setup Steps
 1. Clone or copy the repository files.
 2. Install dependencies:
    ```bash
@@ -105,29 +107,28 @@ Gemini is instructed to behave as a decision support engine, not a chatbot. Stru
 
 ---
 
-## 6. Three-Minute Presentation Demo Script
+## 6. Environment Variables
 
-Use this script to present the project to the judges smoothly:
-
-1. **Introduction (30s)**: Introduce StadiumOps AI as a real-time command deck for FIFA World Cup 2026 organizers. Highlight that it is a decision support engine, not a chatbot.
-2. **Load Scenario (30s)**: Click **Data Sources** in the sidebar. Highlight the Gemini Live vs Simulation connectivity badge. Under **Synthetic Scenario Ingestor**, choose **Heavy Rain** and click **Ingest & Run GenAI Analysis**.
-3. **Live Telemetry & AI Recs (45s)**: Go back to the **Dashboard**. Point out the drifting metrics (updating every 8 seconds), the Recharts area chart plotting 30 points, and the generated decision cards.
-4. **Traceability Explanation (30s)**: Click **Explain Decision** on the Critical weather alert card. Show the judges the **Telemetry Signals Triggered** panel, proving which sensors triggered the warning, why it was chosen, and the confidence details.
-5. **Close the Loop (30s)**: Click **Approve** on the recommendation. Point out the outcome simulation: the target gate queue wait times drop, the incident disappears, and the timeline audit log updates.
-6. **Report Export (15s)**: Go to **Reports**, choose **GenAI Decision & Reasoning Export**, generate it, and download the report txt file showing the complete digital audit trail.
+The application reads from `.env` in the root:
+- `VITE_GEMINI_API_KEY`: Used to query the live Gemini 1.5 Flash model. If not present, the system defaults to simulation mode.
+- `VITE_FIREBASE_API_KEY`: Used to connect to Google Cloud Firestore. If missing, all databases route to `localStorage`.
 
 ---
 
-## 7. Expected Judge Q&A Prep
+## 7. Quick Demo Walkthrough
 
-### Q: Why did you choose this architecture?
-**A:** We decoupled the parsing logic (`csvParser.js`), the normalizer (`dataNormalizer.js`), the streaming coordinator (`recommendationEngine.js`), and the cognitive AI requests (`geminiService.js`). This ensures that UI components are isolated, rendering metrics dynamically from a centralized data bus without loading locks.
+Use the built-in demo to walk through a complete operational scenario:
 
-### Q: How does live telemetry simulation work?
-**A:** When a dataset is loaded, a background interval is initialized. Every 8 seconds, it applies realistic mathematical drifts (Gate queues $\pm$1–3m, Occupancy $\pm$1–2%, Staffing $\pm$0–1) within logical bounds. It then recalculates averages, re-queries Gemini/Simulator, and dispatches a custom browser event to update all views.
+1. **Ingest Scenario**: Go to **Data Sources** in the sidebar. Click **Ingest & Run GenAI Analysis** under the Synthetic Scenario Ingestor (defaults to *Normal Match*).
+2. **Review Decisions**: Return to the **Dashboard** to view calculated AI recommendations and drifting telemetry.
+3. **Traceability**: Click **Explain Decision** to inspect which telemetry values triggered the recommendation.
+4. **Outcome**: Click **Approve** and observe the gate queues draining and active incident flags clearing in real-time.
+5. **Download Report**: Go to **Reports**, choose **GenAI Decision & Reasoning Export**, and click **Download** to save the complete decision audit log.
 
-### Q: How does it handle invalid CSV data?
-**A:** The parser implements strict cell-by-cell validation. If a row has negative queue wait times, occupancy above 100%, or mismatched columns, it rejects that row and appends it to a visible validator warning table. It normalizes only the valid rows, preserving backward compatibility without breaking the dashboard.
+---
 
-### Q: How could this connect to real stadium sensors in the future?
-**A:** The coordinator communicates via a standard JSON snapshot. To connect to physical camera check lines, turnstile loops, or parking barriers, we would replace the CSV ingestor with a polling service or WebSocket subscriber that fetches telemetry from stadium IoT gateways and calls `recommendationEngine.processNewDataset()` automatically.
+## 8. Future Improvements
+
+- **Real-Time IoT Integrations**: Transition the data bus from CSV ingestion to real-time WebSockets subscribing to gate turnstile loops and camera passenger flows.
+- **Enhanced Predictive Analytics**: Integrate ML models to forecast pedestrian arrival surges up to 60 minutes in advance using shuttle schedule offsets.
+- **Multimodal AI Reasoning**: Allow operations managers to upload live drone/CCTV feed screenshots to analyze concourse blockages directly.
