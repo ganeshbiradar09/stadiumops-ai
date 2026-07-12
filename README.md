@@ -35,6 +35,11 @@ StadiumOps AI is an operational decision-support platform designed for FIFA Worl
 
 *Note: Live operational telemetry is simulated for demonstration purposes. The architecture is designed so simulated inputs can be replaced with real-time IoT, ticketing, or sensor feeds without changing the recommendation workflow.*
 
+### Assumptions Made
+1. **IoT Sensor & API Availability**: It is assumed that the physical stadium is equipped with concourse optical counters, RFID ticketing turnstile checkpoints, parking lot loops, and shuttle GPS sensors that publish unified telemetry streams.
+2. **Decision Advisory Role**: The AI functions as an advisory decision support tool. Recommended dispatches require verification and approval by the Operations Manager before physical barriers are adjusted or patrol teams are deployed.
+3. **Connectivity Failovers**: When networks are offline or Gemini API keys are absent, the application is assumed to fall back onto its built-in client-side database proxy to maintain operational capability.
+
 ---
 
 ## 2. Project Highlights
