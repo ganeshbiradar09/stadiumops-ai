@@ -8,10 +8,18 @@ StadiumOps AI is an AI-assisted operational decision-support platform that conti
 ---
 
 ## 1. Project Screenshots
-*Tip: Place your screenshots inside `src/assets/` named exactly as below to render them in your repository.*
 
-![Dashboard Command Deck](src/assets/hero.png)
-*Figure 1: Main command deck featuring dynamic Recharts scrollers, status grids, and decision cards.*
+![Operations Control Deck](src/assets/operations.png)
+*Figure 1: Access Point Control Deck supervising security wait times, turnstile loads, and marshal allocations.*
+
+![Crowd Intelligence Command](src/assets/crowd.png)
+*Figure 2: Concourse Heatmap details showing crowd density indexes, Safety Risk ratings, and patrol counts.*
+
+![Operations Data Hub](src/assets/datasources.png)
+*Figure 3: Data Sources hub for CSV validation parsing warnings, manual override forms, and synthetic scenarios.*
+
+![Operational Reports Registry](src/assets/reports.png)
+*Figure 4: Reports compiler supporting GenAI Decision and Reasoning structured logs export.*
 
 ---
 
