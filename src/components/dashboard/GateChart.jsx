@@ -100,4 +100,4 @@ export const GateChart = () => {
     </Card>
   );
 };
-export default GateChart;
+export default React.memo(GateChart);

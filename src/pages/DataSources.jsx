@@ -109,6 +109,18 @@ export const DataSources = () => {
   };
 
   const handleFile = (file) => {
+    if (!file) return;
+
+    if (!file.name.endsWith('.csv') && file.type !== 'text/csv') {
+      alert("Security Error: Only CSV files are allowed.");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Security Error: File exceeds the 5MB upload limit.");
+      return;
+    }
+
     setSelectedFile(file);
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -148,6 +160,10 @@ export const DataSources = () => {
     e.preventDefault();
     if (!incidentText.trim()) return;
     setIsProcessing(true);
+    
+    // Lightweight sanitization: strip < and >
+    const sanitizedIncidentText = incidentText.replace(/[<>]/g, '');
+
     try {
       const currentSnapshot = recommendationEngine.getActiveSnapshot() || {
         gates: [
@@ -171,7 +187,7 @@ export const DataSources = () => {
           capacity: gate.capacity,
           staff: gate.staff,
           weather: currentSnapshot.context.weather,
-          incident: isTarget ? incidentText : 'None',
+          incident: isTarget ? sanitizedIncidentText : 'None',
           parking: currentSnapshot.context.parkingOccupancy,
           transitDelay: currentSnapshot.context.transitDelay,
           time: new Date().toLocaleTimeString('en-US', { hour12: false }).slice(0, 5)

@@ -7,7 +7,7 @@ import { ShieldAlert, RefreshCw, Terminal, Search } from 'lucide-react';
 /**
  * Operational Intelligence event stream and sensor logs widget.
  */
-export const IntelSection = () => {
+export const IntelSection = React.memo(() => {
   const [filter, setFilter] = useState('ALL');
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -112,5 +112,5 @@ export const IntelSection = () => {
       </div>
     </Card>
   );
-};
+});
 export default IntelSection;

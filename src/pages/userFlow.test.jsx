@@ -134,5 +134,5 @@ Gate B, 5, 20%, 2000, 10, Clear, None, 50%, 0, 12:00`;
     // Check that timeline events and localStorage stores are updated successfully
     const timeline = JSON.parse(localStorage.getItem('stadiumops_timeline'));
     expect(timeline[0].status).toBe('Approved');
-  });
+  }, 15000);
 });

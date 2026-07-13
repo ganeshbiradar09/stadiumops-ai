@@ -27,9 +27,10 @@ export class ErrorBoundary extends Component {
             The system encountered an unexpected UI rendering error, but the remaining dashboard operations continue to run securely.
           </p>
           {this.state.error && (
-            <pre className="p-3 bg-slate-950 rounded-lg text-[10px] font-mono text-rose-400 overflow-x-auto text-left border border-slate-800">
-              {this.state.error.toString()}
-            </pre>
+            <div className="p-3 bg-slate-950 rounded-lg text-[10px] font-mono text-rose-400 overflow-x-auto text-left border border-slate-800">
+              <p>Reference Code: ERR-500-UI</p>
+              <p>Please contact the operations desk if the issue persists.</p>
+            </div>
           )}
           <button
             onClick={() => this.setState({ hasError: false, error: null })}

@@ -45,7 +45,7 @@ describe('ErrorBoundary.jsx unit tests', () => {
     expect(screen.getByTestId('error-boundary-fallback')).toBeInTheDocument();
     expect(screen.queryByTestId('child-content')).not.toBeInTheDocument();
     expect(screen.getByText(/Component Execution Halted/i)).toBeInTheDocument();
-    expect(screen.getByText(/Test rendering crash/i)).toBeInTheDocument();
+    expect(screen.getByText(/Reference Code: ERR-500-UI/i)).toBeInTheDocument();
   });
 
   test('attempts recovery when clicking Attempt Recovery button', () => {

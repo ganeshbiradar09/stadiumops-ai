@@ -101,4 +101,4 @@ export const CrowdChart = () => {
     </Card>
   );
 };
-export default CrowdChart;
+export default React.memo(CrowdChart);

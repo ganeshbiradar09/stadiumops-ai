@@ -100,19 +100,24 @@ export const saveRecommendation = async (rec) => {
 };
 
 export const updateRecommendationStatus = async (recId, status) => {
+  const safeRecId = String(recId);
+  if (!safeRecId.trim() || typeof status !== 'string') {
+    return Promise.reject(new Error("Security Error: Invalid ID or status payload type."));
+  }
+  
   // Check if it's a simulated local database document ID
-  const isLocalId = String(recId).startsWith('rec-');
+  const isLocalId = safeRecId.startsWith('rec-');
   if (db && !isLocalId) {
     try {
-      const docRef = doc(db, 'recommendations', recId);
+      const docRef = doc(db, 'recommendations', safeRecId);
       await updateDoc(docRef, { status });
-      return { id: recId, status };
+      return { id: safeRecId, status };
     } catch (err) {
       console.warn("Firestore update failed, using local fallback: ", err);
-      return localDb.updateRecord('recommendations', recId, { status });
+      return localDb.updateRecord('recommendations', safeRecId, { status });
     }
   }
-  return localDb.updateRecord('recommendations', recId, { status });
+  return localDb.updateRecord('recommendations', safeRecId, { status });
 };
 
 export const saveIncident = async (incident) => {
@@ -142,9 +147,18 @@ export const getStoredRecommendations = async () => {
 };
 
 export const saveAuditLog = async (action, details) => {
+  if (typeof action !== 'string' || !details) {
+    return Promise.reject(new Error("Security Error: Malformed audit payload."));
+  }
+  
+  const detailsString = typeof details === 'object' ? JSON.stringify(details) : String(details);
+  
+  const safeAction = action.substring(0, 500);
+  const safeDetails = detailsString.substring(0, 2000);
+
   const logEntry = {
-    action,
-    details,
+    action: safeAction,
+    details: safeDetails,
     timestamp: new Date().toISOString()
   };
   if (db) {
