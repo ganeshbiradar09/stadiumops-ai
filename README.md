@@ -57,13 +57,16 @@ StadiumOps AI is designed as an AI-assisted operational command center for large
 
 ## 4. Project Highlights
 
-✔ **Live Telemetry Simulation**: Drifts metrics every 8 seconds to mimic a real digital twin.
-✔ **Explainable AI (XAI)**: Shows exact metric triggers (e.g. wait times, alarms) inside decision rationales.
-✔ **Closed-Loop Outcome Simulation**: Drains queues, redirects flow, and clears active incidents instantly on approval.
+✔ **AI-Assisted Operational Decision Support**: Real-time dispatching and crowd safety operations.
+✔ **AI Analysis Workflow**: Simulates multi-stage processing logs before revealing recommendations.
+✔ **Explainable AI**: Telemetry-based reasoning showing cognitive triggers.
+✔ **Live Telemetry Simulation**: Drifts metrics every 8 seconds to mimic a real stadium digital twin.
+✔ **Executive Decision Briefing**: Comprehensive executive dashboard summarizing key alerts.
+✔ **Closed-Loop Outcome Simulation**: Drains wait times, clears incidents, and re-allocates staff dynamically on approval.
 ✔ **High-Reliability CSV Validation**: Captures, lists, and displays validation warning logs before ingestion.
-✔ **Optional Firebase + Offline Failover**: Firestore enhances persistence. If Firebase credentials are absent, StadiumOps AI automatically falls back to local storage.
-✔ **One-Click Presentation Mode**: Runs a complete automated storyboard in one click for judging.
-✔ **Vercel Static Hosting**: Fast production builds with zero-config serverless deployments.
+✔ **Firebase + Offline Fallback**: Real-time syncing with automatic failover to local storage.
+✔ **Report Export**: Compiles KPIs, recommendations, and audit logs into flat text reports.
+✔ **One-Click Presentation Demo**: Complete automated presentation run for quick judging evaluations.
 
 ---
 
@@ -109,25 +112,26 @@ StadiumOps AI is designed as an AI-assisted operational command center for large
 The application decouples parsing, state coordinating, and cognitive reasoning into distinct layers:
 
 ```
-    [ CSV / Synthetic Scenario ]
-                 │
-                 ▼
-          [ CSV Validator ]
-                 │
-                 ▼
-         [ Data Normalizer ]
-                 │
-                 ▼
-      [ Recommendation Engine ]
-           │           │
-           ▼           ▼
-      [ Gemini ]  [ Simulation ]
-           │
-           ▼
-     [ React Dashboard ]
-           │
-           ▼
-     [ Reports & Audit ]
+CSV / Synthetic Scenario
+        │
+        ▼
+ CSV Validation
+        │
+        ▼
+ Data Normalization
+        │
+        ▼
+ Recommendation Engine
+        │
+   ┌────┴────┐
+   ▼         ▼
+ Gemini   Simulation
+        │
+        ▼
+ React Dashboard
+        │
+        ▼
+ Reports & Audit Logs
 ```
 
 - **Frontend Core**: React (v19) + Vite (v8) + Tailwind CSS (v4) with native `@tailwindcss/vite` integration.
@@ -196,13 +200,15 @@ The application reads from `.env` in the root:
 
 ## 11. Quick Demo Walkthrough
 
-Use the built-in demo to walk through a complete operational scenario:
+Walk through the primary operational flow of the command deck:
 
-1. **Ingest Scenario**: Go to **Data Sources** in the sidebar. Click **Ingest & Run GenAI Analysis** under the Synthetic Scenario Ingestor (defaults to *Normal Match*).
-2. **Review Decisions**: Return to the **Dashboard** to view calculated AI recommendations and drifting telemetry.
-3. **Traceability**: Click **Explain Decision** to inspect which telemetry values triggered the recommendation.
-4. **Outcome**: Click **Approve** and observe the gate queues draining and active incident flags clearing in real-time.
-5. **Download Report**: Go to **Reports**, choose **GenAI Decision & Reasoning Export**, and click **Download** to save the complete decision audit log.
+1. **Load a Scenario**: Ingest synthetic models or upload customized CSV telemetry in the **Data Sources** page.
+2. **Observe AI Analysis**: Watch the inline multi-stage loading sequence as the engine processes live data.
+3. **Review Recommendations**: Inspect computed directives on the dashboard deck.
+4. **Open Explain Decision**: Redirection to the executive briefing board displaying the 6-dimension telemetry signals grid and confidence ratings.
+5. **Approve a Recommendation**: Click Approve to deploy action plans.
+6. **Observe Outcome Simulation**: Watch queues drain, incident markers clear, and KPI scores update in real-time.
+7. **Export Report**: Navigate to the **Reports** menu to compile and download operational briefings.
 
 ---
 
