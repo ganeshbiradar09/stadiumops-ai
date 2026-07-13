@@ -60,6 +60,7 @@ export const DataSources = () => {
       const parsed = parseAndValidateCSV(dataset.csv);
       
       if (parsed.processedRows.length > 0) {
+        localStorage.setItem('stadiumops_trigger_loading', 'true');
         await recommendationEngine.processNewDataset(parsed.processedRows, dataset.name);
         alert(`Successfully loaded and analyzed "${dataset.name}". Redirecting to Dashboard...`);
         navigate('/');
@@ -123,6 +124,7 @@ export const DataSources = () => {
     if (!validationReport || validationReport.processedRows.length === 0) return;
     setIsProcessing(true);
     try {
+      localStorage.setItem('stadiumops_trigger_loading', 'true');
       await recommendationEngine.processNewDataset(validationReport.processedRows, `CSV Upload: ${selectedFile.name}`);
       alert("Successfully loaded and analyzed CSV dataset. Redirecting to Dashboard...");
       navigate('/');
@@ -169,6 +171,7 @@ export const DataSources = () => {
         };
       });
 
+      localStorage.setItem('stadiumops_trigger_loading', 'true');
       await recommendationEngine.processNewDataset(rows, "Manual Incident Override");
       alert("Manual Incident logged. Redirecting to Dashboard...");
       setIncidentText('');

@@ -30,6 +30,12 @@ import { formatNumber, formatPercent } from '../utils/formatters';
 export const Dashboard = () => {
   const [explainRec, setExplainRec] = useState(null);
   const [demoRunning, setDemoRunning] = useState(false);
+  const [isAiProcessing, setIsAiProcessing] = useState(false);
+  const [loadingStage, setLoadingStage] = useState(0);
+  const [justFinishedProcessing, setJustFinishedProcessing] = useState(false);
+  const [lastUpdateTime, setLastUpdateTime] = useState(new Date().toLocaleTimeString('en-US', { hour12: false }));
+  const [resolvingId, setResolvingId] = useState(null);
+  const [rejectingId, setRejectingId] = useState(null);
   
   // Real-time telemetry bindings
   const [activeSnapshot, setActiveSnapshot] = useState(recommendationEngine.getActiveSnapshot());
@@ -42,10 +48,53 @@ export const Dashboard = () => {
       setActiveSnapshot(recommendationEngine.getActiveSnapshot());
       setRecommendations(recommendationEngine.getActiveRecommendations());
       setTimelineEvents(recommendationEngine.getTimeline());
+      setLastUpdateTime(new Date().toLocaleTimeString('en-US', { hour12: false }));
+
+      const triggerLoading = localStorage.getItem('stadiumops_trigger_loading');
+      if (triggerLoading === 'true') {
+        localStorage.removeItem('stadiumops_trigger_loading');
+        setIsAiProcessing(true);
+      }
     };
     window.addEventListener('stadiumops-telemetry-update', handleUpdate);
+
+    // Initial mount check
+    const triggerLoading = localStorage.getItem('stadiumops_trigger_loading');
+    if (triggerLoading === 'true') {
+      localStorage.removeItem('stadiumops_trigger_loading');
+      setIsAiProcessing(true);
+    }
+
     return () => window.removeEventListener('stadiumops-telemetry-update', handleUpdate);
   }, []);
+
+  // AI loading sequence timer (1.8s max duration, 600ms per stage)
+  useEffect(() => {
+    if (isAiProcessing) {
+      setLoadingStage(0);
+      const timer1 = setTimeout(() => setLoadingStage(1), 600);
+      const timer2 = setTimeout(() => setLoadingStage(2), 1200);
+      const timer3 = setTimeout(() => {
+        setIsAiProcessing(false);
+        setLoadingStage(0);
+        setJustFinishedProcessing(true);
+      }, 1800);
+      return () => {
+        clearTimeout(timer1);
+        clearTimeout(timer2);
+        clearTimeout(timer3);
+      };
+    }
+  }, [isAiProcessing]);
+
+  useEffect(() => {
+    if (justFinishedProcessing) {
+      const timer = setTimeout(() => {
+        setJustFinishedProcessing(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [justFinishedProcessing]);
 
   // Setup default fallback snapshot on initial boot if empty
   useEffect(() => {
@@ -63,11 +112,25 @@ export const Dashboard = () => {
   }, []);
 
   const handleApprove = async (id) => {
-    await recommendationEngine.approveRecommendation(id);
+    setResolvingId(id);
+    setTimeout(async () => {
+      await recommendationEngine.approveRecommendation(id);
+      setActiveSnapshot(recommendationEngine.getActiveSnapshot());
+      setRecommendations(recommendationEngine.getActiveRecommendations());
+      setTimelineEvents(recommendationEngine.getTimeline());
+      setResolvingId(null);
+    }, 250);
   };
 
   const handleReject = async (id) => {
-    await recommendationEngine.rejectRecommendation(id);
+    setRejectingId(id);
+    setTimeout(async () => {
+      await recommendationEngine.rejectRecommendation(id);
+      setActiveSnapshot(recommendationEngine.getActiveSnapshot());
+      setRecommendations(recommendationEngine.getActiveRecommendations());
+      setTimelineEvents(recommendationEngine.getTimeline());
+      setRejectingId(null);
+    }, 250);
   };
 
   // Presentation Demo Script
@@ -90,6 +153,8 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
       // Ingest and trigger recalculation
       const res = await recommendationEngine.processNewDataset(parsed.processedRows, "Interactive Presentation Demo Scenario");
       
+      setIsAiProcessing(true); // Trigger 1.8s AI Processing Sequence
+
       // Force immediate re-renders
       setActiveSnapshot(res.snapshot);
       setRecommendations(res.recommendations);
@@ -101,7 +166,11 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
       const criticalRec = res.recommendations.find(r => r.priority === 'Critical');
       if (criticalRec) {
         alert(`Demo Phase 2/5: AI Decision Engine flagged anomalous queue sizes and turnstile outages at Gate B.\nAutomatically approving recommended action: "${criticalRec.title}"`);
+        
+        setResolvingId(criticalRec.id);
+        await new Promise(r => setTimeout(r, 250)); // Play exit animation in demo
         await recommendationEngine.approveRecommendation(criticalRec.id);
+        setResolvingId(null);
         
         // Sync state
         setActiveSnapshot(recommendationEngine.getActiveSnapshot());
@@ -172,9 +241,150 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
   const totalOccupancy = Math.round(activeSnapshot.gates.reduce((sum, g) => sum + (g.capacity * (g.occupancy / 100)), 0));
   const occupancyPercentage = Math.round((totalOccupancy / totalCapacity) * 100);
 
+  // Compute triggering telemetry variables for the redesigned Explain Decision Executive Briefing
+  const targetGateName = activeSnapshot && explainRec
+    ? (activeSnapshot.gates.find(g => 
+        explainRec.title.includes(g.name.split(' (')[0]) || 
+        explainRec.description.includes(g.name.split(' (')[0])
+      )?.name || null)
+    : null;
+  const targetGate = targetGateName ? activeSnapshot.gates.find(g => g.name === targetGateName) : null;
+  
+  const queueVal = targetGate ? targetGate.queueTime : activeSnapshot.maxQueueTime;
+  const queueLabel = targetGate ? `${targetGate.name.split(' (')[0]} Queue` : 'Max Queue Wait';
+  let queueSeverity = 'normal';
+  if (queueVal > 25) queueSeverity = 'critical';
+  else if (queueVal > 15) queueSeverity = 'warning';
+
+  const occVal = targetGate ? targetGate.occupancy : occupancyPercentage;
+  const occLabel = targetGate ? `${targetGate.name.split(' (')[0]} Load` : 'Average Stadium Load';
+  let occSeverity = 'normal';
+  if (occVal > 90) occSeverity = 'critical';
+  else if (occVal > 75) occSeverity = 'warning';
+
+  const weatherVal = activeSnapshot.context.weather;
+  let weatherSeverity = 'normal';
+  if (weatherVal === 'Heavy Rain') weatherSeverity = 'critical';
+  else if (weatherVal !== 'Clear' && weatherVal !== 'Unknown') weatherSeverity = 'warning';
+
+  let incidentTextVal = 'None';
+  let incidentSeverity = 'normal';
+  if (targetGate) {
+    const gateInc = activeSnapshot.incidents.find(i => i.gate.includes(targetGate.name.split(' ')[0]));
+    if (gateInc) {
+      incidentTextVal = gateInc.description;
+      incidentSeverity = (gateInc.description.toLowerCase().includes('outage') || gateInc.description.toLowerCase().includes('validator')) ? 'critical' : 'warning';
+    }
+  } else if (activeSnapshot.incidents.length > 0) {
+    incidentTextVal = activeSnapshot.incidents.map(i => i.description).join(', ');
+    incidentSeverity = 'warning';
+  }
+
+  const transitVal = activeSnapshot.context.transitDelay;
+  let transitSeverity = 'normal';
+  if (transitVal > 20) transitSeverity = 'critical';
+  else if (transitVal > 5) transitSeverity = 'warning';
+
+  const parkingVal = activeSnapshot.context.parkingOccupancy;
+  let parkingSeverity = 'normal';
+  if (parkingVal > 90) parkingSeverity = 'critical';
+  else if (parkingVal > 80) parkingSeverity = 'warning';
+
+  const renderSeverityCard = (icon, label, value, severity) => {
+    const severityClasses = {
+      critical: 'border-rose-500/30 bg-rose-500/5 text-rose-300',
+      warning: 'border-amber-500/30 bg-amber-500/5 text-amber-300',
+      normal: 'border-emerald-500/20 bg-emerald-500/5 text-emerald-300'
+    };
+
+    const statusBadge = {
+      critical: 'bg-rose-500/10 text-rose-400 border border-rose-500/20',
+      warning: 'bg-amber-500/10 text-amber-400 border border-amber-500/20',
+      normal: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+    };
+
+    const statusLabel = {
+      critical: 'CRITICAL',
+      warning: 'WARNING',
+      normal: 'NOMINAL'
+    };
+
+    return (
+      <div className={`p-3 border rounded-xl flex flex-col justify-between h-24 shadow-sm ${severityClasses[severity]}`}>
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-1.5 text-slate-400">
+            {icon}
+            <span className="text-[9px] font-bold uppercase tracking-wider truncate max-w-[100px]" title={label}>
+              {label}
+            </span>
+          </div>
+          <span className={`text-[8px] font-bold font-mono px-1 rounded ${statusBadge[severity]}`}>
+            {statusLabel[severity]}
+          </span>
+        </div>
+        <div className="mt-2">
+          <div className="text-sm font-black font-mono tracking-tight leading-none text-slate-100 truncate" title={value}>
+            {value}
+          </div>
+          <div className="text-[8px] text-slate-500 font-semibold truncate mt-1">
+            Telemetry Input
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6 md:space-y-8 animate-fade-in font-sans">
       
+      {/* Live Operations Banner */}
+      <div className="bg-slate-950 border border-slate-900 rounded-xl p-3 px-4 flex flex-wrap items-center justify-between gap-4 text-xs font-semibold shadow-inner">
+        <div className="flex flex-wrap items-center gap-4">
+          {/* LIVE indicator */}
+          <div className="flex items-center gap-1.5 text-emerald-400 font-bold tracking-wider">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+            </span>
+            <span>LIVE OPERATIONAL FEED</span>
+          </div>
+
+          <div className="h-3 w-px bg-slate-800 hidden sm:block"></div>
+
+          {/* Active scenario */}
+          <div className="flex items-center gap-1.5">
+            <span className="text-slate-500 uppercase tracking-wider text-[10px]">Scenario:</span>
+            <span className="text-slate-300 font-bold font-mono">{datasetName}</span>
+          </div>
+
+          <div className="h-3 w-px bg-slate-800 hidden sm:block"></div>
+
+          {/* Last telemetry update */}
+          <div className="flex items-center gap-1.5">
+            <span className="text-slate-500 uppercase tracking-wider text-[10px]">Last Update:</span>
+            <span className="text-slate-300 font-mono font-bold" key={lastUpdateTime}>{lastUpdateTime}</span>
+          </div>
+        </div>
+
+        {/* AI Status */}
+        <div className="flex items-center gap-2">
+          <span className="text-slate-500 uppercase tracking-wider text-[10px]">AI Status:</span>
+          {isAiProcessing ? (
+            <Badge variant="warning" className="animate-pulse text-[9px] py-0 font-bold tracking-wider uppercase">
+              Analyzing...
+            </Badge>
+          ) : justFinishedProcessing ? (
+            <Badge variant="success" className="text-[9px] py-0 font-bold tracking-wider uppercase">
+              Recommendations Updated
+            </Badge>
+          ) : (
+            <Badge variant="info" className="text-[9px] py-0 font-bold tracking-wider uppercase">
+              Monitoring
+            </Badge>
+          )}
+        </div>
+      </div>
+
       {/* Global Status Banner & AI / Simulation Mode Badges */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-900/30 p-4 border border-slate-900 rounded-xl">
         <div>
@@ -207,7 +417,9 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
           <div className="text-right">
             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Avg wait times</span>
             <div className="text-base font-black text-blue-400 font-mono mt-0.5">
-              {activeSnapshot.averageQueueTime} mins
+              <span key={activeSnapshot.averageQueueTime} className="animate-number-pulse">
+                {activeSnapshot.averageQueueTime}
+              </span> mins
             </div>
           </div>
           <div className="text-right">
@@ -229,10 +441,14 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
           </div>
           <div>
             <div className="text-2xl font-black tracking-tight text-slate-100 font-mono">
-              {occupancyPercentage}%
+              <span key={occupancyPercentage} className="animate-number-pulse">
+                {occupancyPercentage}
+              </span>%
             </div>
             <p className="text-[10px] text-slate-400 mt-1.5 truncate">
-              {formatNumber(totalOccupancy)} in attendance
+              <span key={totalOccupancy} className="animate-number-pulse">
+                {formatNumber(totalOccupancy)}
+              </span> in attendance
             </p>
           </div>
           <div className="w-full bg-slate-950 h-1.5 rounded-full mt-3 overflow-hidden border border-slate-900">
@@ -253,10 +469,12 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
           </div>
           <div>
             <div className="text-2xl font-black tracking-tight text-slate-100 uppercase flex items-baseline gap-1.5">
-              <span>{activeSnapshot.crowdDensityLevel}</span>
+              <span key={activeSnapshot.crowdDensityLevel} className="animate-number-pulse">
+                {activeSnapshot.crowdDensityLevel}
+              </span>
             </div>
             <p className="text-[10px] text-slate-400 mt-1.5 truncate">
-              Max wait: {activeSnapshot.maxQueueTime} mins
+              Max wait: <span key={activeSnapshot.maxQueueTime} className="animate-number-pulse font-mono">{activeSnapshot.maxQueueTime}</span> mins
             </p>
           </div>
           <div className="mt-3 flex items-center gap-1.5 text-[10px] font-semibold text-amber-400">
@@ -275,10 +493,12 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
           </div>
           <div>
             <div className="text-2xl font-black tracking-tight text-slate-100 font-mono">
-              {activeSnapshot.gates.length} active
+              <span key={activeSnapshot.gates.length} className="animate-number-pulse">
+                {activeSnapshot.gates.length}
+              </span> active
             </div>
             <p className="text-[10px] text-slate-400 mt-1.5 truncate">
-              Avg queue: {activeSnapshot.averageQueueTime} mins
+              Avg queue: <span key={activeSnapshot.averageQueueTime} className="animate-number-pulse">{activeSnapshot.averageQueueTime}</span> mins
             </p>
           </div>
           <div className="mt-3">
@@ -298,7 +518,9 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
           </div>
           <div>
             <div className="text-2xl font-black tracking-tight text-slate-100 font-mono">
-              {activeSnapshot.context.parkingOccupancy}%
+              <span key={activeSnapshot.context.parkingOccupancy} className="animate-number-pulse">
+                {activeSnapshot.context.parkingOccupancy}
+              </span>%
             </div>
             <p className="text-[10px] text-slate-400 mt-1.5 truncate">
               Lot A-D combined capacity
@@ -321,7 +543,7 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
             </div>
           </div>
           <div>
-            <div className="text-2xl font-black tracking-tight text-slate-100">
+            <div className="text-2xl font-black tracking-tight text-slate-100" key={activeSnapshot.context.weather}>
               {activeSnapshot.context.weather}
             </div>
             <p className="text-[10px] text-slate-400 mt-1.5 truncate">
@@ -344,7 +566,9 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
           </div>
           <div>
             <div className="text-2xl font-black tracking-tight text-slate-100 font-mono flex items-center gap-1">
-              <span>{activeSnapshot.averageQueueTime > 20 ? '78' : '94'}</span>
+              <span key={activeSnapshot.averageQueueTime} className="animate-number-pulse">
+                {activeSnapshot.averageQueueTime > 20 ? '78' : '94'}
+              </span>
               <span className="text-[10px] text-emerald-400 flex items-center font-bold">
                 <TrendingUp className="h-3 w-3 inline" /> +1.2%
               </span>
@@ -384,13 +608,56 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
           }
         >
           <div className="mt-4 space-y-4 max-h-[460px] overflow-y-auto pr-1">
-            {recommendations.length === 0 ? (
+            {isAiProcessing ? (
+              <div className="h-[400px] flex flex-col items-center justify-center border border-slate-900 rounded-xl bg-slate-950/20 px-4">
+                {/* Central spinner */}
+                <div className="relative mb-5 flex items-center justify-center">
+                  <div className="h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+
+                {/* Processing messages */}
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 font-mono">
+                  Operational Engine Ingest
+                </h3>
+                <p className="text-xs text-blue-400 font-mono font-bold animate-pulse text-center mb-5">
+                  {loadingStage === 0 && "Connecting telemetry…"}
+                  {loadingStage === 1 && "Analyzing operational data…"}
+                  {loadingStage === 2 && "Generating AI recommendations…"}
+                </p>
+
+                {/* Progress bar */}
+                <div className="w-56 bg-slate-950 h-1 rounded-full overflow-hidden border border-slate-900 relative">
+                  <div 
+                    className="bg-blue-500 h-full rounded-full transition-all duration-300 ease-out"
+                    style={{
+                      width: `${
+                        loadingStage === 0 ? '30%' :
+                        loadingStage === 1 ? '65%' : '95%'
+                      }`
+                    }}
+                  ></div>
+                </div>
+
+                {/* Sleek inline system status log */}
+                <div className="mt-6 w-full max-w-xs bg-slate-950/60 border border-slate-900/60 rounded-lg p-2.5 font-mono text-[9px] text-slate-500 space-y-1 text-left h-20 overflow-y-auto">
+                  {loadingStage >= 0 && (
+                    <div className="text-blue-500/70">&gt; Connecting to perimeter devices...</div>
+                  )}
+                  {loadingStage >= 1 && (
+                    <div className="text-amber-500/70">&gt; Risk matrix validation active...</div>
+                  )}
+                  {loadingStage >= 2 && (
+                    <div className="text-emerald-500/70">&gt; Finalizing decision support lists...</div>
+                  )}
+                </div>
+              </div>
+            ) : recommendations.length === 0 ? (
               <div className="h-36 flex flex-col items-center justify-center text-slate-500 text-xs font-semibold border border-slate-900 rounded-xl bg-slate-950/20">
                 <span>No recommendations computed.</span>
                 <span className="text-[10px] text-slate-600 mt-1">Please upload operational CSV or run synthetic models on the Data Sources hub.</span>
               </div>
             ) : (
-              recommendations.map((rec) => {
+              recommendations.map((rec, index) => {
                 let priorityVariant = 'info';
                 if (rec.priority === 'Critical') priorityVariant = 'danger';
                 if (rec.priority === 'High') priorityVariant = 'warning';
@@ -399,12 +666,19 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
                 if (rec.status === 'Approved') statusColor = 'success';
                 if (rec.status === 'Rejected') statusColor = 'danger';
 
+                const isResolving = resolvingId === rec.id;
+                const isRejecting = rejectingId === rec.id;
+
                 return (
                   <div 
                     key={rec.id} 
+                    style={{ animationDelay: `${index * 80}ms` }}
                     className={`
                       p-4 rounded-xl border bg-slate-950/30 flex flex-col gap-3 transition-all hover:bg-slate-900/10
                       ${rec.status === 'Approved' ? 'border-emerald-950/40 bg-emerald-950/5' : rec.status === 'Rejected' ? 'border-rose-950/30' : 'border-slate-800'}
+                      animate-card-fade-in opacity-0
+                      ${isResolving ? 'animate-resolve-fade-out' : ''}
+                      ${isRejecting ? 'animate-resolve-fade-out' : ''}
                     `}
                   >
                     {/* Card Header */}
@@ -549,92 +823,97 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
       {/* Explain Decision Popup Modal overlay */}
       {explainRec && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl max-w-xl w-full p-6 shadow-2xl flex flex-col gap-4 animate-scale-up">
-            <div className="flex justify-between items-start">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl flex flex-col gap-5 animate-scale-up max-h-[90vh] overflow-y-auto">
+            
+            {/* Header */}
+            <div className="flex justify-between items-start border-b border-slate-800 pb-4">
               <div>
-                <div className="flex items-center gap-1.5 text-[9px] font-mono text-slate-500 font-bold uppercase tracking-wider">
-                  <FileCode className="h-3.5 w-3.5" />
-                  <span>Prompt Engineering & Cognitive Metadata</span>
+                <div className="flex items-center gap-1.5 text-[10px] font-mono text-blue-400 font-bold uppercase tracking-wider">
+                  <BrainCircuit className="h-4 w-4" />
+                  <span>Executive Decision Support briefing</span>
                 </div>
-                <h3 className="text-sm font-extrabold text-slate-100 mt-1">Explain Operational Decision</h3>
+                <h3 className="text-base font-extrabold text-slate-100 mt-1 leading-snug">
+                  {explainRec.title}
+                </h3>
               </div>
               <button 
                 onClick={() => setExplainRec(null)}
-                className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors"
+                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors border border-slate-700/60"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            {/* Prompt version / model details */}
-            <div className="grid grid-cols-2 gap-3 text-[10px] font-mono bg-slate-950 p-3 rounded-lg border border-slate-800/80">
-              <div>
-                <span className="text-slate-500">Model Name:</span>
-                <span className="text-blue-400 font-bold block mt-0.5">{explainRec.modelName}</span>
+            {/* AI Summary and Confidence Score */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
+              {/* Confidence badge card */}
+              <div className="bg-slate-950 border border-slate-800/80 rounded-xl p-4 flex flex-col items-center justify-center text-center shadow-md">
+                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">
+                  Confidence Score
+                </span>
+                <div className="text-3xl font-black text-blue-400 font-mono">
+                  {explainRec.confidence}%
+                </div>
+                <span className="text-[8px] text-slate-400 font-bold uppercase mt-2 px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">
+                  Trust Rated
+                </span>
               </div>
-              <div>
-                <span className="text-slate-500">Prompt Version:</span>
-                <span className="text-blue-400 font-bold block mt-0.5">{explainRec.promptVersion}</span>
-              </div>
-              <div>
-                <span className="text-slate-500">Dataset Context:</span>
-                <span className="text-slate-300 font-bold block mt-0.5">{explainRec.datasetName}</span>
-              </div>
-              <div>
-                <span className="text-slate-500">Timestamp:</span>
-                <span className="text-slate-300 font-bold block mt-0.5 truncate">{explainRec.timestamp}</span>
+
+              {/* Rationale summary */}
+              <div className="md:col-span-2 bg-slate-950 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between">
+                <div>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                    AI Summary
+                  </span>
+                  <p className="text-xs text-slate-300 leading-relaxed font-semibold italic">
+                    "{explainRec.reasoning}"
+                  </p>
+                </div>
+                <div className="flex gap-4 text-[9px] font-mono text-slate-500 border-t border-slate-900/60 pt-2 mt-2">
+                  <span>Model: <span className="text-slate-400">{explainRec.modelName}</span></span>
+                  <span>Version: <span className="text-slate-400">v{explainRec.promptVersion}</span></span>
+                </div>
               </div>
             </div>
 
-            {/* Metrics Triggered */}
-            {explainRec.metrics_triggered && (
-              <div className="space-y-1">
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Telemetry Signals Triggered</span>
-                <div className="grid grid-cols-2 gap-2 bg-slate-950 p-3 rounded-lg border border-slate-900 text-xs font-mono">
-                  {Object.entries(explainRec.metrics_triggered).map(([key, value]) => (
-                    <div key={key} className="flex justify-between border-b border-slate-900/60 pb-1 last:border-0 last:pb-0">
-                      <span className="text-slate-500 font-semibold">{key}:</span>
-                      <span className="text-blue-400 font-bold">{value}</span>
-                    </div>
-                  ))}
-                </div>
+            {/* Triggered telemetry cards grid */}
+            <div className="space-y-2">
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                Triggered Telemetry Signals
+              </span>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {renderSeverityCard(<Clock className="h-3.5 w-3.5 text-slate-400" />, queueLabel, `${queueVal} mins`, queueSeverity)}
+                {renderSeverityCard(<Users className="h-3.5 w-3.5 text-slate-400" />, occLabel, `${occVal}%`, occSeverity)}
+                {renderSeverityCard(<CloudSun className="h-3.5 w-3.5 text-slate-400" />, 'Weather State', weatherVal, weatherSeverity)}
+                {renderSeverityCard(<ShieldAlert className="h-3.5 w-3.5 text-slate-400" />, 'Override Alert', incidentTextVal, incidentSeverity)}
+                {renderSeverityCard(<Car className="h-3.5 w-3.5 text-slate-400" />, 'Transit Delay', `${transitVal} mins`, transitSeverity)}
+                {renderSeverityCard(<Car className="h-3.5 w-3.5 text-slate-400" />, 'Parking Fill', `${parkingVal}%`, parkingSeverity)}
               </div>
-            )}
+            </div>
 
-            {/* Main Rationale Reasoning */}
-            <div className="space-y-1">
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Decision Rationale</span>
-              <p className="text-xs text-slate-300 leading-relaxed bg-slate-950 p-3 rounded-lg border border-slate-900 font-medium">
-                {explainRec.reasoning}
+            {/* Operational Directive (The recommended action) */}
+            <div className="p-3 bg-slate-950 border border-slate-800 rounded-xl">
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                Operational Recommendation
+              </span>
+              <p className="text-xs text-slate-100 font-extrabold leading-relaxed">
+                {explainRec.recommended_action}
               </p>
             </div>
 
-            {/* Confidence factors */}
-            <div className="space-y-2">
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Cognitive Confidence Factors ({explainRec.confidence}%)</span>
-              <ul className="space-y-1.5 text-xs text-slate-400 font-medium">
-                {explainRec.confidence_factors?.map((fac, idx) => (
-                  <li key={idx} className="flex gap-2 items-start">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
-                    <span>{fac}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
             {/* Safety Risks if Ignored */}
-            <div className="p-3 bg-rose-500/5 border border-rose-500/10 rounded-lg flex items-start gap-2.5 text-xs text-slate-300">
+            <div className="p-3 bg-rose-500/5 border border-rose-500/10 rounded-xl flex items-start gap-2.5">
               <ShieldAlert className="h-4.5 w-4.5 text-rose-400 shrink-0 mt-0.5" />
               <div>
                 <span className="font-bold text-rose-400 block text-[10px] uppercase">Safety Risk if Ignored:</span>
-                <p className="mt-0.5 text-slate-300 leading-normal font-semibold">{explainRec.risk_if_ignored}</p>
+                <p className="mt-0.5 text-xs text-slate-300 leading-normal font-semibold">{explainRec.risk_if_ignored}</p>
               </div>
             </div>
 
             {/* Close Button */}
             <div className="flex justify-end pt-2 border-t border-slate-800">
               <Button variant="secondary" size="sm" onClick={() => setExplainRec(null)}>
-                Dismiss Explanation
+                Dismiss Briefing
               </Button>
             </div>
           </div>
