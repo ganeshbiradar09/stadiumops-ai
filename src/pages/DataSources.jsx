@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
@@ -8,7 +8,7 @@ import { normalizeStadiumData } from '../utils/dataNormalizer';
 import { recommendationEngine } from '../utils/recommendationEngine';
 import { SYNTHETIC_DATASETS } from '../data/syntheticDatasets';
 import { dataSourcesList } from '../data/mockStadiumData';
-import { Database, Upload, FileText, CheckCircle2, ShieldAlert, Layers, Play, Settings2, Sliders, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Database, Upload, FileText, ShieldAlert, Layers, ToggleLeft, ToggleRight } from 'lucide-react';
 
 export const DataSources = () => {
   const navigate = useNavigate();
@@ -98,6 +98,13 @@ export const DataSources = () => {
   const handleFileInput = (e) => {
     if (e.target.files && e.target.files[0]) {
       handleFile(e.target.files[0]);
+    }
+  };
+
+  const handleUploadKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      document.getElementById('file-upload').click();
     }
   };
 
@@ -199,7 +206,7 @@ export const DataSources = () => {
         {/* Model Connectivity Alert Toggler */}
         <div className="flex items-center gap-3 bg-slate-950/60 p-3 rounded-lg border border-slate-800">
           <div className="text-left font-mono">
-            <span className="text-[9px] text-slate-500 block">Gemini API status</span>
+            <span className="text-[9px] text-slate-400 block">Gemini API status</span>
             <div className="text-xs font-bold text-slate-200">
               {hasApiKey ? (
                 <span className="text-emerald-400 flex items-center gap-1.5">
@@ -207,18 +214,21 @@ export const DataSources = () => {
                   Active in env
                 </span>
               ) : (
-                <span className="text-slate-500">Not configured (.env)</span>
+                <span className="text-slate-400">Not configured (.env)</span>
               )}
             </div>
           </div>
           <div className="h-6 w-px bg-slate-800"></div>
           <button 
             onClick={toggleSimulationMode}
-            className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-blue-400 hover:text-blue-300"
+            className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-blue-400 hover:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded-sm"
+            role="switch"
+            aria-checked={!forceSim && hasApiKey}
+            aria-label="Toggle Gemini API Live Mode"
           >
             {forceSim || !hasApiKey ? (
               <>
-                <ToggleLeft className="h-5 w-5 text-slate-500" />
+                <ToggleLeft className="h-5 w-5 text-slate-400" />
                 <span>Simulation Active</span>
               </>
             ) : (
@@ -239,7 +249,7 @@ export const DataSources = () => {
           <Card title="Synthetic Scenario Ingestor" subtitle="Simulate specific World Cup stadium operational conditions for testing">
             <div className="mt-4 space-y-4">
               <div>
-                <label className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1.5">Select Scenario</label>
+                <label className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1.5">Select Scenario</label>
                 <select 
                   value={selectedSyntheticKey}
                   onChange={(e) => setSelectedSyntheticKey(e.target.value)}
@@ -249,7 +259,7 @@ export const DataSources = () => {
                     <option key={key} value={key}>{dataset.name}</option>
                   ))}
                 </select>
-                <p className="text-[10px] text-slate-500 mt-2">
+                <p className="text-[10px] text-slate-400 mt-2">
                   {SYNTHETIC_DATASETS[selectedSyntheticKey].description}
                 </p>
               </div>
@@ -277,26 +287,26 @@ export const DataSources = () => {
                 {/* Overall Telemetry */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-slate-950/60 p-3 rounded-lg border border-slate-900 text-xs">
                   <div>
-                    <span className="text-[9px] text-slate-500 font-bold block uppercase">Weather Condition</span>
+                    <span className="text-[9px] text-slate-400 font-bold block uppercase">Weather Condition</span>
                     <span className="text-slate-200 font-bold">{normalizedPreview.context.weather}</span>
                   </div>
                   <div>
-                    <span className="text-[9px] text-slate-500 font-bold block uppercase">Parking Fill</span>
+                    <span className="text-[9px] text-slate-400 font-bold block uppercase">Parking Fill</span>
                     <span className="text-slate-200 font-bold">{normalizedPreview.context.parkingOccupancy}%</span>
                   </div>
                   <div>
-                    <span className="text-[9px] text-slate-500 font-bold block uppercase">Transit Delay</span>
+                    <span className="text-[9px] text-slate-400 font-bold block uppercase">Transit Delay</span>
                     <span className="text-slate-200 font-bold">{normalizedPreview.context.transitDelay} mins</span>
                   </div>
                   <div>
-                    <span className="text-[9px] text-slate-500 font-bold block uppercase">Average Wait Time</span>
+                    <span className="text-[9px] text-slate-400 font-bold block uppercase">Average Wait Time</span>
                     <span className="text-blue-400 font-bold">{normalizedPreview.averageQueueTime} mins</span>
                   </div>
                 </div>
 
                 {/* Gates Parsed */}
                 <div className="space-y-1">
-                  <span className="text-[9px] text-slate-500 font-bold block uppercase mb-1">Parsed Gate Checkpoints</span>
+                  <span className="text-[9px] text-slate-400 font-bold block uppercase mb-1">Parsed Gate Checkpoints</span>
                   <div className="max-h-[160px] overflow-y-auto border border-slate-900 rounded-lg divide-y divide-slate-900">
                     {normalizedPreview.gates.map((g, idx) => (
                       <div key={idx} className="flex justify-between items-center p-2.5 text-[11px] hover:bg-slate-900/10">
@@ -326,14 +336,14 @@ export const DataSources = () => {
                       </div>
                       <div>
                         <h4 className="text-xs font-bold text-slate-200">{src.name}</h4>
-                        <p className="text-[10px] text-slate-500 mt-0.5 font-mono">
+                        <p className="text-[10px] text-slate-400 mt-0.5 font-mono">
                           Format: {src.type} | Sync: {src.frequency}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4 self-end sm:self-center font-mono">
                       <div className="text-right">
-                        <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block">Processed Logs</span>
+                        <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block">Processed Logs</span>
                         <span className="text-xs text-slate-300 font-semibold">{src.recordsProcessed.toLocaleString()}</span>
                       </div>
                       <Badge variant={isActive ? 'success' : 'slate'}>{src.status}</Badge>
@@ -354,8 +364,12 @@ export const DataSources = () => {
               onDragOver={handleDrag}
               onDragLeave={handleDrag}
               onDrop={handleDrop}
+              onKeyDown={handleUploadKeyDown}
+              tabIndex={0}
+              role="button"
+              aria-label="CSV file upload dropzone"
               className={`
-                mt-4 border-2 border-dashed rounded-xl p-6 text-center transition-all cursor-pointer flex flex-col items-center justify-center min-h-[160px]
+                mt-4 border-2 border-dashed rounded-xl p-6 text-center transition-all cursor-pointer flex flex-col items-center justify-center min-h-[160px] focus:outline-none focus:ring-2 focus:ring-blue-500/50
                 ${dragActive ? 'border-blue-500 bg-blue-500/5' : 'border-slate-800 hover:border-slate-700 bg-slate-950/20'}
               `}
             >
@@ -369,9 +383,9 @@ export const DataSources = () => {
               
               {!selectedFile && (
                 <label htmlFor="file-upload" className="w-full h-full flex flex-col items-center justify-center cursor-pointer">
-                  <Upload className="h-8 w-8 text-slate-500 mb-3" />
+                  <Upload className="h-8 w-8 text-slate-400 mb-3" />
                   <span className="text-xs font-bold text-slate-200">Drag & drop CSV file or <span className="text-blue-400">browse</span></span>
-                  <span className="text-[9px] text-slate-500 mt-1 uppercase tracking-wider">Supports Gate, Queue, Occupancy, Capacity...</span>
+                  <span className="text-[9px] text-slate-400 mt-1 uppercase tracking-wider">Supports Gate, Queue, Occupancy, Capacity...</span>
                 </label>
               )}
 
@@ -383,11 +397,11 @@ export const DataSources = () => {
                   {/* Validation Summary Report */}
                   <div className="mt-3 w-full bg-slate-950/60 p-2.5 rounded-lg border border-slate-900 text-left space-y-1">
                     <div className="flex justify-between text-[10px]">
-                      <span className="text-slate-500">Processed Rows:</span>
+                      <span className="text-slate-400">Processed Rows:</span>
                       <span className="text-emerald-400 font-bold font-mono">{validationReport.summary.processed}</span>
                     </div>
                     <div className="flex justify-between text-[10px]">
-                      <span className="text-slate-500">Rejected Rows:</span>
+                      <span className="text-slate-400">Rejected Rows:</span>
                       <span className="text-rose-400 font-bold font-mono">{validationReport.summary.rejected}</span>
                     </div>
                   </div>
@@ -407,7 +421,7 @@ export const DataSources = () => {
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="mt-1 text-[9px] text-slate-500 hover:text-slate-300"
+                    className="mt-1 text-[9px] text-slate-400 hover:text-slate-300"
                     onClick={() => {
                       setSelectedFile(null);
                       setValidationReport(null);
@@ -442,11 +456,12 @@ export const DataSources = () => {
           <Card title="Manual Incident Form" subtitle="Log incidents or blockages directly to the control deck">
             <form onSubmit={handleManualSubmit} className="mt-4 space-y-4">
               <div>
-                <label className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1.5">Affected Checkpoint</label>
+                <label htmlFor="affectedCheckpoint" className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1.5">Affected Checkpoint</label>
                 <select 
+                  id="affectedCheckpoint"
                   value={incidentGate}
                   onChange={(e) => setIncidentGate(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-slate-300 focus:outline-none"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-slate-300 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50"
                 >
                   <option>Gate A (North)</option>
                   <option>Gate B (East)</option>
@@ -456,13 +471,14 @@ export const DataSources = () => {
                 </select>
               </div>
               <div>
-                <label className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1.5">Override Log Details</label>
+                <label htmlFor="overrideLogDetails" className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1.5">Override Log Details</label>
                 <textarea
+                  id="overrideLogDetails"
                   value={incidentText}
                   onChange={(e) => setIncidentText(e.target.value)}
                   placeholder="e.g. Turnstile scanner failure detected. Ticket queues building up. Redirect flow."
                   rows={3}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs text-slate-300 placeholder-slate-600 focus:outline-none focus:border-blue-500/50"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs text-slate-300 placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50"
                   required
                 />
               </div>

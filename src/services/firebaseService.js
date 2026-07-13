@@ -26,7 +26,7 @@ if (isFirebaseConfigured) {
     }
     db = getFirestore(app);
     auth = getAuth(app);
-    console.log("Firestore and Auth initialized successfully.");
+    // Removed debug log
   } catch (error) {
     console.error("Firebase init failed, falling back to simulation layers: ", error);
   }

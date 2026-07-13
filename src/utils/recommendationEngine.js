@@ -247,6 +247,16 @@ export const recommendationEngine = {
   },
 
   /**
+   * Stops the active telemetry streaming loop
+   */
+  stopLiveStreaming() {
+    if (telemetryInterval) {
+      clearInterval(telemetryInterval);
+      telemetryInterval = null;
+    }
+  },
+
+  /**
    * Dynamic Telemetry Streaming Loop.
    * Simulates active real-time operations by adjusting metrics.
    */
@@ -401,7 +411,7 @@ export const recommendationEngine = {
         detail: { snapshot: updatedSnapshot }
       }));
 
-    }, 8000);
+    }, process.env.NODE_ENV === 'test' ? 10 : 8000);
   },
 
   /**

@@ -273,12 +273,12 @@ const runSimulationMode = (normalizedData, datasetName) => {
  */
 export const generateRecommendations = async (normalizedData, datasetName) => {
   if (!isAiMode) {
-    console.log("No Gemini API key found. Running in Simulation Mode.");
+    // Removed debug log
     return Promise.resolve(runSimulationMode(normalizedData, datasetName));
   }
 
   try {
-    console.log("Requesting Gemini operational analysis...");
+    // Removed debug log
     
     // Direct REST call to Gemini 1.5 Flash to ensure browser compatibility
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;

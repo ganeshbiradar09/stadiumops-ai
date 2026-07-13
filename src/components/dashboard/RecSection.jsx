@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card } from '../common/Card';
 import { Badge } from '../common/Badge';
 import { genAiDecisions } from '../../data/mockStadiumData';
-import { BrainCircuit, CheckCircle2, AlertTriangle, ArrowRight, Play } from 'lucide-react';
+import { BrainCircuit, CheckCircle2, ArrowRight, Play } from 'lucide-react';
 
 /**
  * GenAI Operational Decision Engine recommendation and dispatch panel.
@@ -46,14 +46,14 @@ export const RecSection = () => {
                 `}
               >
                 <div className="flex justify-between items-center mb-1.5 gap-2">
-                  <span className="font-mono text-[10px] text-slate-500 font-bold">{dec.id}</span>
+                  <span className="font-mono text-[10px] text-slate-400 font-bold">{dec.id}</span>
                   <Badge variant={statusColor} className="text-[9px] px-1.5 py-0">{dec.status}</Badge>
                 </div>
                 <div className={`truncate ${isSelected ? 'text-slate-100' : 'text-slate-300'}`}>
                   {dec.recommendation}
                 </div>
                 <div className="flex items-center justify-between mt-2">
-                  <span className="text-[10px] text-slate-500 font-mono">{dec.timestamp}</span>
+                  <span className="text-[10px] text-slate-400 font-mono">{dec.timestamp}</span>
                   <span className="text-[10px] text-blue-400 font-mono font-bold">Conf: {dec.confidence}%</span>
                 </div>
               </button>
@@ -68,7 +68,7 @@ export const RecSection = () => {
               {/* Recommendation Title */}
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-mono text-slate-500 font-bold uppercase">Decision Detail • {selectedDecision.id}</span>
+                  <span className="text-[9px] font-mono text-slate-400 font-bold uppercase">Decision Detail • {selectedDecision.id}</span>
                   <span className="text-xs font-mono font-extrabold text-blue-400">Confidence Match: {selectedDecision.confidence}%</span>
                 </div>
                 <h4 className="text-sm font-bold text-slate-100 mt-1">{selectedDecision.recommendation}</h4>
@@ -76,7 +76,7 @@ export const RecSection = () => {
 
               {/* Rationale and AI Logic */}
               <div className="space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">AI Reasoning & Logic</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">AI Reasoning & Logic</span>
                 <p className="text-xs text-slate-300 leading-relaxed bg-slate-950 p-2.5 rounded-lg border border-slate-900 font-medium">
                   {selectedDecision.rationale}
                 </p>
@@ -93,7 +93,7 @@ export const RecSection = () => {
 
               {/* Suggested Action List */}
               <div className="space-y-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Suggested Action Plan</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Suggested Action Plan</span>
                 <ul className="space-y-1.5 text-xs text-slate-400">
                   {selectedDecision.actions.map((act, idx) => (
                     <li key={idx} className="flex gap-2 items-start">
@@ -110,7 +110,7 @@ export const RecSection = () => {
                   className={`
                     inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-lg border transition-all
                     ${selectedDecision.status.includes('Deployed') || selectedDecision.status === 'Completed'
-                      ? 'bg-slate-900 border-slate-800 text-slate-500 cursor-not-allowed'
+                      ? 'bg-slate-900 border-slate-800 text-slate-400 cursor-not-allowed'
                       : 'bg-blue-600 border-blue-500 hover:bg-blue-500 text-slate-100'
                     }
                   `}
@@ -122,7 +122,7 @@ export const RecSection = () => {
               </div>
             </div>
           ) : (
-            <div className="h-full flex items-center justify-center text-slate-500 text-xs font-semibold">
+            <div className="h-full flex items-center justify-center text-slate-400 text-xs font-semibold">
               Select a cognitive decision to inspect
             </div>
           )}

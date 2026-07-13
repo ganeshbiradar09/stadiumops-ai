@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Card } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
 import { recommendationEngine } from '../utils/recommendationEngine';
-import { Bus, Car, Train, Signal, ShieldAlert } from 'lucide-react';
-import { formatNumber, formatPercent } from '../utils/formatters';
+import { Bus, Train, ShieldAlert } from 'lucide-react';
+import { formatNumber } from '../utils/formatters';
 
 export const Transit = () => {
-  const [activeSnapshot, setActiveSnapshot] = useState(null);
+  const [, setActiveSnapshot] = useState(null);
   const [parkingOccupancy, setParkingOccupancy] = useState(86);
   const [transitDelay, setTransitDelay] = useState(0);
 
@@ -27,7 +27,6 @@ export const Transit = () => {
 
   // Compute parking stats dynamically relative to the snapshot fill percentage
   const totalSpots = 12000;
-  const occupiedSpots = Math.round(totalSpots * (parkingOccupancy / 100));
 
   const lots = [
     { name: "Lot A (VIP & Media)", capacity: 2000, occupied: Math.min(2000, Math.round(2000 * (parkingOccupancy / 100) * 1.1)) },
@@ -67,7 +66,7 @@ export const Transit = () => {
                   <div className="flex justify-between items-start">
                     <div>
                       <h4 className="text-xs font-bold text-slate-200">{lot.name}</h4>
-                      <p className="text-[10px] text-slate-500 font-mono mt-0.5">
+                      <p className="text-[10px] text-slate-400 font-mono mt-0.5">
                         {formatNumber(lot.occupied)} / {formatNumber(lot.capacity)} slots
                       </p>
                     </div>
@@ -82,7 +81,7 @@ export const Transit = () => {
                         style={{ width: `${occupancy}%` }}
                       ></div>
                     </div>
-                    <div className="flex justify-between text-[10px] text-slate-500 font-semibold font-mono">
+                    <div className="flex justify-between text-[10px] text-slate-400 font-semibold font-mono">
                       <span>Occupancy: {occupancy}%</span>
                       <span>{lot.capacity - lot.occupied} open spots</span>
                     </div>
@@ -100,13 +99,13 @@ export const Transit = () => {
             <div className="space-y-4 mt-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-slate-950/50 p-3 rounded-lg border border-slate-900">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Active Fleet</span>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Active Fleet</span>
                   <span className="text-lg font-black text-slate-200 font-mono">
                     {transitDelay > 0 ? '26 / 26 vehicles' : '24 / 26 vehicles'}
                   </span>
                 </div>
                 <div className="bg-slate-950/50 p-3 rounded-lg border border-slate-900">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Average Headway</span>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Average Headway</span>
                   <span className={`text-lg font-black font-mono ${transitDelay > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>
                     {transitDelay > 0 ? '5.4 minutes' : '3.2 minutes'}
                   </span>
@@ -134,7 +133,7 @@ export const Transit = () => {
                   </div>
                   <div>
                     <h4 className="text-xs font-bold text-slate-200">Metro Station Alpha (East)</h4>
-                    <p className="text-[10px] text-slate-500">Intervals: 4 mins • Load level: Normal</p>
+                    <p className="text-[10px] text-slate-400">Intervals: 4 mins • Load level: Normal</p>
                   </div>
                 </div>
                 <Badge variant={transitDelay > 0 ? 'warning' : 'success'}>
@@ -148,7 +147,7 @@ export const Transit = () => {
                   </div>
                   <div>
                     <h4 className="text-xs font-bold text-slate-200">Metro Station West Link</h4>
-                    <p className="text-[10px] text-slate-500">Intervals: 5 mins • Load level: Low</p>
+                    <p className="text-[10px] text-slate-400">Intervals: 5 mins • Load level: Low</p>
                   </div>
                 </div>
                 <Badge variant="success">On Time</Badge>

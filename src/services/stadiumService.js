@@ -28,8 +28,8 @@ export const stadiumService = {
   /**
    * Triggers a manual log entry ingestion (mock database write)
    */
-  async submitIncident(incident) {
-    console.log("Simulating telemetry db write for incident: ", incident);
+  async submitIncident(_incident) {
+    // Removed debug log
     return Promise.resolve({ success: true, timestamp: new Date().toISOString() });
   }
 };

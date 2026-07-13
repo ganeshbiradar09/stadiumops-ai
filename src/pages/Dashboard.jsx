@@ -1,31 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
 import { Button } from '../components/common/Button';
 import { CrowdChart } from '../components/dashboard/CrowdChart';
 import { GateChart } from '../components/dashboard/GateChart';
 import { IntelSection } from '../components/dashboard/IntelSection';
-import { isAiMode } from '../services/geminiService';
+import { ExecutiveBriefingModal } from '../components/dashboard/ExecutiveBriefingModal';
+import { isAiMode } from '../services/geminiService'; 
 import { recommendationEngine } from '../utils/recommendationEngine';
 import { parseAndValidateCSV } from '../services/csvParser';
-import { 
-  Users, 
+import {
+  Users,
+  Car,
+  CloudSun,
   Flame, 
   LogOut, 
-  Car, 
-  CloudSun, 
   Gauge, 
   TrendingUp, 
   BrainCircuit, 
-  CheckCircle2, 
-  Clock, 
   HelpCircle,
   Check, 
-  X,
-  FileCode,
-  ShieldAlert
+  X
 } from 'lucide-react';
-import { formatNumber, formatPercent } from '../utils/formatters';
+import { formatNumber } from '../utils/formatters';
 
 export const Dashboard = () => {
   const [explainRec, setExplainRec] = useState(null);
@@ -36,12 +33,25 @@ export const Dashboard = () => {
   const [lastUpdateTime, setLastUpdateTime] = useState(new Date().toLocaleTimeString('en-US', { hour12: false }));
   const [resolvingId, setResolvingId] = useState(null);
   const [rejectingId, setRejectingId] = useState(null);
+  const lastActiveElement = useRef(null);
   
   // Real-time telemetry bindings
   const [activeSnapshot, setActiveSnapshot] = useState(recommendationEngine.getActiveSnapshot());
   const [recommendations, setRecommendations] = useState(recommendationEngine.getActiveRecommendations());
   const [timelineEvents, setTimelineEvents] = useState(recommendationEngine.getTimeline());
   const datasetName = recommendationEngine.getActiveDatasetName();
+
+  // Calculate active layout metrics safely
+  const { occupancyPercentage, totalOccupancy } = React.useMemo(() => {
+    if (!activeSnapshot || !activeSnapshot.gates) return { occupancyPercentage: 0, totalOccupancy: 0 };
+    const cap = activeSnapshot.gates.reduce((sum, g) => sum + g.capacity, 0);
+    if (cap === 0) return { occupancyPercentage: 0, totalOccupancy: 0 };
+    const occ = Math.round(activeSnapshot.gates.reduce((sum, g) => sum + (g.capacity * (g.occupancy / 100)), 0));
+    return {
+      occupancyPercentage: Math.round((occ / cap) * 100),
+      totalOccupancy: occ
+    };
+  }, [activeSnapshot]);
 
   useEffect(() => {
     const handleUpdate = () => {
@@ -96,6 +106,24 @@ export const Dashboard = () => {
     }
   }, [justFinishedProcessing]);
 
+  useEffect(() => {
+    if (explainRec) {
+      lastActiveElement.current = document.activeElement;
+      const handleKeyDown = (e) => {
+        if (e.key === 'Escape') {
+          setExplainRec(null);
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+        if (lastActiveElement.current) {
+          lastActiveElement.current.focus();
+        }
+      };
+    }
+  }, [explainRec]);
+
   // Setup default fallback snapshot on initial boot if empty
   useEffect(() => {
     if (!activeSnapshot) {
@@ -109,7 +137,7 @@ export const Dashboard = () => {
       ];
       recommendationEngine.processNewDataset(defaultRows, "Default Operational Feed");
     }
-  }, []);
+  }, [activeSnapshot]);
 
   const handleApprove = async (id) => {
     setResolvingId(id);
@@ -219,8 +247,8 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
 
       alert("Demo Phase 5/5: One-click presentation demonstration completed successfully!\nAll KPIs are restored within standard safety limits.");
 
-    } catch (err) {
-      console.error(err);
+    } catch {
+      // Removed debug log
       alert("Demo simulation error occurred.");
     } finally {
       setDemoRunning(false);
@@ -236,103 +264,6 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
     );
   }
 
-  // Calculate active layout metrics from the current snapshot
-  const totalCapacity = activeSnapshot.gates.reduce((sum, g) => sum + g.capacity, 0);
-  const totalOccupancy = Math.round(activeSnapshot.gates.reduce((sum, g) => sum + (g.capacity * (g.occupancy / 100)), 0));
-  const occupancyPercentage = Math.round((totalOccupancy / totalCapacity) * 100);
-
-  // Compute triggering telemetry variables for the redesigned Explain Decision Executive Briefing
-  const targetGateName = activeSnapshot && explainRec
-    ? (activeSnapshot.gates.find(g => 
-        explainRec.title.includes(g.name.split(' (')[0]) || 
-        explainRec.description.includes(g.name.split(' (')[0])
-      )?.name || null)
-    : null;
-  const targetGate = targetGateName ? activeSnapshot.gates.find(g => g.name === targetGateName) : null;
-  
-  const queueVal = targetGate ? targetGate.queueTime : activeSnapshot.maxQueueTime;
-  const queueLabel = targetGate ? `${targetGate.name.split(' (')[0]} Queue` : 'Max Queue Wait';
-  let queueSeverity = 'normal';
-  if (queueVal > 25) queueSeverity = 'critical';
-  else if (queueVal > 15) queueSeverity = 'warning';
-
-  const occVal = targetGate ? targetGate.occupancy : occupancyPercentage;
-  const occLabel = targetGate ? `${targetGate.name.split(' (')[0]} Load` : 'Average Stadium Load';
-  let occSeverity = 'normal';
-  if (occVal > 90) occSeverity = 'critical';
-  else if (occVal > 75) occSeverity = 'warning';
-
-  const weatherVal = activeSnapshot.context.weather;
-  let weatherSeverity = 'normal';
-  if (weatherVal === 'Heavy Rain') weatherSeverity = 'critical';
-  else if (weatherVal !== 'Clear' && weatherVal !== 'Unknown') weatherSeverity = 'warning';
-
-  let incidentTextVal = 'None';
-  let incidentSeverity = 'normal';
-  if (targetGate) {
-    const gateInc = activeSnapshot.incidents.find(i => i.gate.includes(targetGate.name.split(' ')[0]));
-    if (gateInc) {
-      incidentTextVal = gateInc.description;
-      incidentSeverity = (gateInc.description.toLowerCase().includes('outage') || gateInc.description.toLowerCase().includes('validator')) ? 'critical' : 'warning';
-    }
-  } else if (activeSnapshot.incidents.length > 0) {
-    incidentTextVal = activeSnapshot.incidents.map(i => i.description).join(', ');
-    incidentSeverity = 'warning';
-  }
-
-  const transitVal = activeSnapshot.context.transitDelay;
-  let transitSeverity = 'normal';
-  if (transitVal > 20) transitSeverity = 'critical';
-  else if (transitVal > 5) transitSeverity = 'warning';
-
-  const parkingVal = activeSnapshot.context.parkingOccupancy;
-  let parkingSeverity = 'normal';
-  if (parkingVal > 90) parkingSeverity = 'critical';
-  else if (parkingVal > 80) parkingSeverity = 'warning';
-
-  const renderSeverityCard = (icon, label, value, severity) => {
-    const severityClasses = {
-      critical: 'border-rose-500/30 bg-rose-500/5 text-rose-300',
-      warning: 'border-amber-500/30 bg-amber-500/5 text-amber-300',
-      normal: 'border-emerald-500/20 bg-emerald-500/5 text-emerald-300'
-    };
-
-    const statusBadge = {
-      critical: 'bg-rose-500/10 text-rose-400 border border-rose-500/20',
-      warning: 'bg-amber-500/10 text-amber-400 border border-amber-500/20',
-      normal: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-    };
-
-    const statusLabel = {
-      critical: 'CRITICAL',
-      warning: 'WARNING',
-      normal: 'NOMINAL'
-    };
-
-    return (
-      <div className={`p-3 border rounded-xl flex flex-col justify-between h-24 shadow-sm ${severityClasses[severity]}`}>
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-1.5 text-slate-400">
-            {icon}
-            <span className="text-[9px] font-bold uppercase tracking-wider truncate max-w-[100px]" title={label}>
-              {label}
-            </span>
-          </div>
-          <span className={`text-[8px] font-bold font-mono px-1 rounded ${statusBadge[severity]}`}>
-            {statusLabel[severity]}
-          </span>
-        </div>
-        <div className="mt-2">
-          <div className="text-sm font-black font-mono tracking-tight leading-none text-slate-100 truncate" title={value}>
-            {value}
-          </div>
-          <div className="text-[8px] text-slate-500 font-semibold truncate mt-1">
-            Telemetry Input
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <div className="space-y-6 md:space-y-8 animate-fade-in font-sans">
@@ -353,7 +284,7 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
 
           {/* Active scenario */}
           <div className="flex items-center gap-1.5">
-            <span className="text-slate-500 uppercase tracking-wider text-[10px]">Scenario:</span>
+            <span className="text-slate-400 uppercase tracking-wider text-[10px]">Scenario:</span>
             <span className="text-slate-300 font-bold font-mono">{datasetName}</span>
           </div>
 
@@ -361,14 +292,14 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
 
           {/* Last telemetry update */}
           <div className="flex items-center gap-1.5">
-            <span className="text-slate-500 uppercase tracking-wider text-[10px]">Last Update:</span>
+            <span className="text-slate-400 uppercase tracking-wider text-[10px]">Last Update:</span>
             <span className="text-slate-300 font-mono font-bold" key={lastUpdateTime}>{lastUpdateTime}</span>
           </div>
         </div>
 
         {/* AI Status */}
         <div className="flex items-center gap-2">
-          <span className="text-slate-500 uppercase tracking-wider text-[10px]">AI Status:</span>
+          <span className="text-slate-400 uppercase tracking-wider text-[10px]">AI Status:</span>
           {isAiProcessing ? (
             <Badge variant="warning" className="animate-pulse text-[9px] py-0 font-bold tracking-wider uppercase">
               Analyzing...
@@ -406,7 +337,9 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
             <button 
               onClick={runOneClickDemo}
               disabled={demoRunning}
-              className="text-[10px] font-bold uppercase tracking-wider text-blue-400 hover:text-blue-300 flex items-center gap-1 animate-pulse"
+              className="text-[10px] font-bold uppercase tracking-wider text-blue-400 hover:text-blue-300 flex items-center gap-1 animate-pulse focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded-sm"
+              aria-label={demoRunning ? "Running presentation demo" : "Run presentation demo"}
+              aria-busy={demoRunning}
             >
               <span>{demoRunning ? '⚡ Running Demo...' : '⚡ Run Presentation Demo'}</span>
             </button>
@@ -415,7 +348,7 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
 
         <div className="flex items-center gap-6">
           <div className="text-right">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Avg wait times</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Avg wait times</span>
             <div className="text-base font-black text-blue-400 font-mono mt-0.5">
               <span key={activeSnapshot.averageQueueTime} className="animate-number-pulse">
                 {activeSnapshot.averageQueueTime}
@@ -423,7 +356,7 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
             </div>
           </div>
           <div className="text-right">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Security State</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Security State</span>
             <div className="text-base font-black text-emerald-400 font-mono mt-0.5">Normal Grid</div>
           </div>
         </div>
@@ -434,7 +367,7 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
         {/* 1. Stadium Status */}
         <Card hover className="flex flex-col justify-between p-4.5">
           <div className="flex justify-between items-start mb-2.5">
-            <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">Stadium Occupancy</span>
+            <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Stadium Occupancy</span>
             <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400">
               <Users className="h-4.5 w-4.5" />
             </div>
@@ -462,7 +395,7 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
         {/* 2. Crowd Density */}
         <Card hover className="flex flex-col justify-between p-4.5">
           <div className="flex justify-between items-start mb-2.5">
-            <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">Crowd Density</span>
+            <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Crowd Density</span>
             <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-400">
               <Flame className="h-4.5 w-4.5" />
             </div>
@@ -486,7 +419,7 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
         {/* 3. Gate Status */}
         <Card hover className="flex flex-col justify-between p-4.5">
           <div className="flex justify-between items-start mb-2.5">
-            <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">Gates Status</span>
+            <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Gates Status</span>
             <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400">
               <LogOut className="h-4.5 w-4.5 rotate-180" />
             </div>
@@ -511,7 +444,7 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
         {/* 4. Parking Usage */}
         <Card hover className="flex flex-col justify-between p-4.5">
           <div className="flex justify-between items-start mb-2.5">
-            <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">Parking Lots</span>
+            <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Parking Lots</span>
             <div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-400">
               <Car className="h-4.5 w-4.5" />
             </div>
@@ -537,7 +470,7 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
         {/* 5. Weather */}
         <Card hover className="flex flex-col justify-between p-4.5">
           <div className="flex justify-between items-start mb-2.5">
-            <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">Weather Telemetry</span>
+            <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Weather Telemetry</span>
             <div className="p-1.5 rounded-lg bg-sky-500/10 text-sky-400">
               <CloudSun className="h-4.5 w-4.5" />
             </div>
@@ -559,7 +492,7 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
         {/* 6. Operational Score */}
         <Card hover className="flex flex-col justify-between p-4.5 border-blue-500/10">
           <div className="flex justify-between items-start mb-2.5">
-            <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">Operational Score</span>
+            <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Operational Score</span>
             <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400">
               <Gauge className="h-4.5 w-4.5" />
             </div>
@@ -609,7 +542,12 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
         >
           <div className="mt-4 space-y-4 max-h-[460px] overflow-y-auto pr-1">
             {isAiProcessing ? (
-              <div className="h-[400px] flex flex-col items-center justify-center border border-slate-900 rounded-xl bg-slate-950/20 px-4">
+              <div 
+                className="h-[400px] flex flex-col items-center justify-center border border-slate-900 rounded-xl bg-slate-950/20 px-4"
+                role="status"
+                aria-live="polite"
+                aria-busy="true"
+              >
                 {/* Central spinner */}
                 <div className="relative mb-5 flex items-center justify-center">
                   <div className="h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
@@ -639,7 +577,7 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
                 </div>
 
                 {/* Sleek inline system status log */}
-                <div className="mt-6 w-full max-w-xs bg-slate-950/60 border border-slate-900/60 rounded-lg p-2.5 font-mono text-[9px] text-slate-500 space-y-1 text-left h-20 overflow-y-auto">
+                <div className="mt-6 w-full max-w-xs bg-slate-950/60 border border-slate-900/60 rounded-lg p-2.5 font-mono text-[9px] text-slate-400 space-y-1 text-left h-20 overflow-y-auto">
                   {loadingStage >= 0 && (
                     <div className="text-blue-500/70">&gt; Connecting to perimeter devices...</div>
                   )}
@@ -652,9 +590,9 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
                 </div>
               </div>
             ) : recommendations.length === 0 ? (
-              <div className="h-36 flex flex-col items-center justify-center text-slate-500 text-xs font-semibold border border-slate-900 rounded-xl bg-slate-950/20">
+              <div className="h-36 flex flex-col items-center justify-center text-slate-400 text-xs font-semibold border border-slate-900 rounded-xl bg-slate-950/20">
                 <span>No recommendations computed.</span>
-                <span className="text-[10px] text-slate-600 mt-1">Please upload operational CSV or run synthetic models on the Data Sources hub.</span>
+                <span className="text-[10px] text-slate-400 mt-1">Please upload operational CSV or run synthetic models on the Data Sources hub.</span>
               </div>
             ) : (
               recommendations.map((rec, index) => {
@@ -701,7 +639,7 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
                     </div>
 
                     <div>
-                      <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Action Directive:</span>
+                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Action Directive:</span>
                       <p className="text-xs text-slate-100 font-extrabold mt-1 leading-relaxed bg-slate-950/60 p-2.5 rounded-lg border border-slate-900">
                         {rec.recommended_action}
                       </p>
@@ -710,19 +648,19 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
                     {/* Operational Variables grid */}
                     <div className="grid grid-cols-2 gap-3 text-[10px] bg-slate-950/30 p-2.5 rounded-lg border border-slate-900/60">
                       <div>
-                        <span className="text-slate-500 block">Queue Reduction</span>
+                        <span className="text-slate-400 block">Queue Reduction</span>
                         <span className="text-slate-200 font-bold font-mono">{rec.estimated_queue_reduction}</span>
                       </div>
                       <div>
-                        <span className="text-slate-500 block">Resolution ETA</span>
+                        <span className="text-slate-400 block">Resolution ETA</span>
                         <span className="text-slate-200 font-bold font-mono">{rec.estimated_resolution_time}</span>
                       </div>
                       <div>
-                        <span className="text-slate-500 block">Staff Needed</span>
+                        <span className="text-slate-400 block">Staff Needed</span>
                         <span className="text-slate-200 font-bold font-mono">{rec.staff_required}</span>
                       </div>
                       <div>
-                        <span className="text-slate-500 block">Impact projection</span>
+                        <span className="text-slate-400 block">Impact projection</span>
                         <span className="text-slate-200 font-bold truncate block">{rec.expected_operational_impact}</span>
                       </div>
                     </div>
@@ -734,6 +672,7 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
                         size="sm" 
                         className="text-[10px] font-bold gap-1"
                         onClick={() => setExplainRec(rec)}
+                        aria-label={`Explain decision details for recommendation: ${rec.title}`}
                       >
                         <HelpCircle className="h-3.5 w-3.5" />
                         <span>Explain Decision</span>
@@ -746,6 +685,7 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
                             size="sm" 
                             className="text-[10px] text-rose-400 border-rose-950/20 hover:bg-rose-500/10 px-2.5"
                             onClick={() => handleReject(rec.id)}
+                            aria-label={`Reject recommendation: ${rec.title}`}
                           >
                             <X className="h-3.5 w-3.5" />
                           </Button>
@@ -754,6 +694,7 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
                             size="sm" 
                             className="text-[10px] bg-blue-600 hover:bg-blue-500 text-slate-100 px-3.5"
                             onClick={() => handleApprove(rec.id)}
+                            aria-label={`Approve recommendation: ${rec.title}`}
                           >
                             <Check className="h-3.5 w-3.5" />
                             <span>Approve</span>
@@ -775,7 +716,7 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
         >
           <div className="mt-4 space-y-4 max-h-[460px] overflow-y-auto pr-1">
             {timelineEvents.length === 0 ? (
-              <div className="h-36 flex items-center justify-center text-slate-500 text-xs font-semibold border border-slate-900 rounded-xl bg-slate-950/20">
+              <div className="h-36 flex items-center justify-center text-slate-400 text-xs font-semibold border border-slate-900 rounded-xl bg-slate-950/20">
                 Timeline logs await dataset uploads...
               </div>
             ) : (
@@ -796,7 +737,7 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
                     <div className="bg-slate-950/40 border border-slate-900 p-3.5 rounded-xl space-y-2">
                       <div className="flex justify-between items-center text-[10px]">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono font-bold text-slate-500">{evt.timestamp.slice(11, 19)}</span>
+                          <span className="font-mono font-bold text-slate-400">{evt.timestamp.slice(11, 19)}</span>
                           <span className="text-slate-300 font-bold">{evt.incident}</span>
                         </div>
                         <Badge variant={statusColor} className="text-[9px] px-1.5 py-0">{evt.status}</Badge>
@@ -807,7 +748,7 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
                         <p className="mt-0.5 text-slate-200 leading-normal">{evt.recommendation}</p>
                       </div>
 
-                      <div className="text-[10px] text-slate-500 bg-slate-950 p-2.5 rounded border border-slate-900/60 leading-relaxed font-semibold">
+                      <div className="text-[10px] text-slate-400 bg-slate-950 p-2.5 rounded border border-slate-900/60 leading-relaxed font-semibold">
                         <span className="text-slate-400 font-bold uppercase block text-[9px] mb-0.5">Audit Outcome log:</span>
                         <span className="text-slate-300">{evt.outcome || 'Pending operational manager authorization.'}</span>
                       </div>
@@ -821,104 +762,11 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
       </div>
 
       {/* Explain Decision Popup Modal overlay */}
-      {explainRec && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl flex flex-col gap-5 animate-scale-up max-h-[90vh] overflow-y-auto">
-            
-            {/* Header */}
-            <div className="flex justify-between items-start border-b border-slate-800 pb-4">
-              <div>
-                <div className="flex items-center gap-1.5 text-[10px] font-mono text-blue-400 font-bold uppercase tracking-wider">
-                  <BrainCircuit className="h-4 w-4" />
-                  <span>Executive Decision Support briefing</span>
-                </div>
-                <h3 className="text-base font-extrabold text-slate-100 mt-1 leading-snug">
-                  {explainRec.title}
-                </h3>
-              </div>
-              <button 
-                onClick={() => setExplainRec(null)}
-                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors border border-slate-700/60"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            {/* AI Summary and Confidence Score */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
-              {/* Confidence badge card */}
-              <div className="bg-slate-950 border border-slate-800/80 rounded-xl p-4 flex flex-col items-center justify-center text-center shadow-md">
-                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">
-                  Confidence Score
-                </span>
-                <div className="text-3xl font-black text-blue-400 font-mono">
-                  {explainRec.confidence}%
-                </div>
-                <span className="text-[8px] text-slate-400 font-bold uppercase mt-2 px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20">
-                  Trust Rated
-                </span>
-              </div>
-
-              {/* Rationale summary */}
-              <div className="md:col-span-2 bg-slate-950 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between">
-                <div>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                    AI Summary
-                  </span>
-                  <p className="text-xs text-slate-300 leading-relaxed font-semibold italic">
-                    "{explainRec.reasoning}"
-                  </p>
-                </div>
-                <div className="flex gap-4 text-[9px] font-mono text-slate-500 border-t border-slate-900/60 pt-2 mt-2">
-                  <span>Model: <span className="text-slate-400">{explainRec.modelName}</span></span>
-                  <span>Version: <span className="text-slate-400">v{explainRec.promptVersion}</span></span>
-                </div>
-              </div>
-            </div>
-
-            {/* Triggered telemetry cards grid */}
-            <div className="space-y-2">
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
-                Triggered Telemetry Signals
-              </span>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {renderSeverityCard(<Clock className="h-3.5 w-3.5 text-slate-400" />, queueLabel, `${queueVal} mins`, queueSeverity)}
-                {renderSeverityCard(<Users className="h-3.5 w-3.5 text-slate-400" />, occLabel, `${occVal}%`, occSeverity)}
-                {renderSeverityCard(<CloudSun className="h-3.5 w-3.5 text-slate-400" />, 'Weather State', weatherVal, weatherSeverity)}
-                {renderSeverityCard(<ShieldAlert className="h-3.5 w-3.5 text-slate-400" />, 'Override Alert', incidentTextVal, incidentSeverity)}
-                {renderSeverityCard(<Car className="h-3.5 w-3.5 text-slate-400" />, 'Transit Delay', `${transitVal} mins`, transitSeverity)}
-                {renderSeverityCard(<Car className="h-3.5 w-3.5 text-slate-400" />, 'Parking Fill', `${parkingVal}%`, parkingSeverity)}
-              </div>
-            </div>
-
-            {/* Operational Directive (The recommended action) */}
-            <div className="p-3 bg-slate-950 border border-slate-800 rounded-xl">
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                Operational Recommendation
-              </span>
-              <p className="text-xs text-slate-100 font-extrabold leading-relaxed">
-                {explainRec.recommended_action}
-              </p>
-            </div>
-
-            {/* Safety Risks if Ignored */}
-            <div className="p-3 bg-rose-500/5 border border-rose-500/10 rounded-xl flex items-start gap-2.5">
-              <ShieldAlert className="h-4.5 w-4.5 text-rose-400 shrink-0 mt-0.5" />
-              <div>
-                <span className="font-bold text-rose-400 block text-[10px] uppercase">Safety Risk if Ignored:</span>
-                <p className="mt-0.5 text-xs text-slate-300 leading-normal font-semibold">{explainRec.risk_if_ignored}</p>
-              </div>
-            </div>
-
-            {/* Close Button */}
-            <div className="flex justify-end pt-2 border-t border-slate-800">
-              <Button variant="secondary" size="sm" onClick={() => setExplainRec(null)}>
-                Dismiss Briefing
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ExecutiveBriefingModal 
+        activeSnapshot={activeSnapshot} 
+        explainRec={explainRec} 
+        onClose={() => setExplainRec(null)} 
+      />
 
       {/* Grid of Event Streams */}
       <div className="grid grid-cols-1 gap-6">

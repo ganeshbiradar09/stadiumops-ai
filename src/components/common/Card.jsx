@@ -19,7 +19,7 @@ export const Card = ({ children, title, subtitle, className = '', headerAction, 
         <div className="flex justify-between items-start mb-4 gap-4">
           <div>
             {title && <h3 className="text-sm font-semibold tracking-wider text-slate-400 uppercase">{title}</h3>}
-            {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
+            {subtitle && <p className="text-xs text-slate-400 mt-0.5">{subtitle}</p>}
           </div>
           {headerAction && <div className="text-xs">{headerAction}</div>}
         </div>

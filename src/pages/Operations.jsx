@@ -3,8 +3,7 @@ import { Card } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
 import { Button } from '../components/common/Button';
 import { recommendationEngine } from '../utils/recommendationEngine';
-import { ShieldCheck, ShieldAlert, Users, LogIn, Activity, Settings2, Sliders } from 'lucide-react';
-import { formatNumber } from '../utils/formatters';
+import { ShieldCheck, ShieldAlert, Users, Activity, Settings2, Sliders } from 'lucide-react';
 
 export const Operations = () => {
   const [gates, setGates] = useState([]);
@@ -85,13 +84,13 @@ export const Operations = () => {
                 {/* Metric grid */}
                 <div className="grid grid-cols-2 gap-4 bg-slate-950/60 p-3 rounded-lg border border-slate-900">
                   <div>
-                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Queue Wait Time</span>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Queue Wait Time</span>
                     <div className={`text-lg font-black font-mono mt-0.5 ${isDanger ? 'text-rose-400' : isWarning ? 'text-amber-400' : 'text-slate-100'}`}>
                       {gate.queueTime} mins
                     </div>
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Active Staff</span>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Active Staff</span>
                     <div className="text-lg font-black font-mono text-slate-100 mt-0.5">
                       {gate.staff} stewards
                     </div>
@@ -101,7 +100,7 @@ export const Operations = () => {
                 {/* Turnstile Load Bar */}
                 <div className="space-y-1">
                   <div className="flex justify-between text-xs font-semibold">
-                    <span className="text-slate-500 uppercase tracking-wide">Turnstile Occupancy</span>
+                    <span className="text-slate-400 uppercase tracking-wide">Turnstile Occupancy</span>
                     <span className={gate.occupancy >= 80 ? 'text-amber-400' : 'text-slate-300'}>{gate.occupancy}%</span>
                   </div>
                   <div className="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-900">
@@ -127,6 +126,7 @@ export const Operations = () => {
                     size="sm" 
                     className="flex-1 text-[11px] font-bold uppercase tracking-wide"
                     onClick={() => toggleGateStatus(gate.gateId)}
+                    aria-label={`Cycle gate status for ${gate.name}`}
                   >
                     Cycle Status
                   </Button>
@@ -135,6 +135,7 @@ export const Operations = () => {
                     size="sm" 
                     className="text-[11px] font-bold"
                     onClick={() => alert(`Opening Configuration Manager for ${gate.name}`)}
+                    aria-label={`Configure settings for ${gate.name}`}
                   >
                     <Settings2 className="h-3.5 w-3.5" />
                   </Button>
@@ -153,7 +154,7 @@ export const Operations = () => {
               <ShieldCheck className="h-6 w-6" />
             </div>
             <div>
-              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Network Nodes</span>
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Network Nodes</span>
               <span className="text-sm font-bold text-slate-200">144 / 144 Online</span>
             </div>
           </div>
@@ -162,7 +163,7 @@ export const Operations = () => {
               <Users className="h-6 w-6" />
             </div>
             <div>
-              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Total Entry Flow</span>
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Total Entry Flow</span>
               <span className="text-sm font-bold text-slate-200">{Math.round(totalEntryFlow)} persons/min</span>
             </div>
           </div>
@@ -171,7 +172,7 @@ export const Operations = () => {
               <Sliders className="h-6 w-6" />
             </div>
             <div>
-              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Average Security Transit</span>
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Average Security Transit</span>
               <span className="text-sm font-bold text-slate-200">{avgSecurityTime} min duration</span>
             </div>
           </div>

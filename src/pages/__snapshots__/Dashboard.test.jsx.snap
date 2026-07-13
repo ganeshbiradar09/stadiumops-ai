@@ -1,0 +1,1038 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Dashboard.jsx integration tests > accessibility and snapshot testing > Dashboard matches structural snapshot 1`] = `
+<div>
+  <div
+    class="space-y-6 md:space-y-8 animate-fade-in font-sans"
+  >
+    <div
+      class="bg-slate-950 border border-slate-900 rounded-xl p-3 px-4 flex flex-wrap items-center justify-between gap-4 text-xs font-semibold shadow-inner"
+    >
+      <div
+        class="flex flex-wrap items-center gap-4"
+      >
+        <div
+          class="flex items-center gap-1.5 text-emerald-400 font-bold tracking-wider"
+        >
+          <span
+            class="relative flex h-1.5 w-1.5"
+          >
+            <span
+              class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
+            />
+            <span
+              class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"
+            />
+          </span>
+          <span>
+            LIVE OPERATIONAL FEED
+          </span>
+        </div>
+        <div
+          class="h-3 w-px bg-slate-800 hidden sm:block"
+        />
+        <div
+          class="flex items-center gap-1.5"
+        >
+          <span
+            class="text-slate-400 uppercase tracking-wider text-[10px]"
+          >
+            Scenario:
+          </span>
+          <span
+            class="text-slate-300 font-bold font-mono"
+          >
+            Fictional Telemetry Feed
+          </span>
+        </div>
+        <div
+          class="h-3 w-px bg-slate-800 hidden sm:block"
+        />
+        <div
+          class="flex items-center gap-1.5"
+        >
+          <span
+            class="text-slate-400 uppercase tracking-wider text-[10px]"
+          >
+            Last Update:
+          </span>
+          <span
+            class="text-slate-300 font-mono font-bold"
+          >
+            00:30:00
+          </span>
+        </div>
+      </div>
+      <div
+        class="flex items-center gap-2"
+      >
+        <span
+          class="text-slate-400 uppercase tracking-wider text-[10px]"
+        >
+          AI Status:
+        </span>
+        <span
+          class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border transition-colors bg-blue-500/10 text-blue-400 border-blue-500/20 text-[9px] py-0 font-bold tracking-wider uppercase"
+        >
+          Monitoring
+        </span>
+      </div>
+    </div>
+    <div
+      class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-900/30 p-4 border border-slate-900 rounded-xl"
+    >
+      <div>
+        <h2
+          class="text-xl font-extrabold text-slate-100 flex items-center gap-2"
+        >
+          <span>
+            Operational Control Deck
+          </span>
+          <span
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border transition-colors bg-amber-500/10 text-amber-400 border-amber-500/20 font-bold uppercase tracking-widest text-[9px]"
+          >
+            Simulation Mode
+          </span>
+        </h2>
+        <div
+          class="flex items-center gap-3 mt-1"
+        >
+          <p
+            class="text-xs text-slate-400"
+          >
+            Active Scenario: 
+            <span
+              class="text-slate-200 font-bold"
+            >
+              Fictional Telemetry Feed
+            </span>
+          </p>
+          <div
+            class="h-3.5 w-px bg-slate-800"
+          />
+          <button
+            aria-busy="false"
+            aria-label="Run presentation demo"
+            class="text-[10px] font-bold uppercase tracking-wider text-blue-400 hover:text-blue-300 flex items-center gap-1 animate-pulse focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded-sm"
+          >
+            <span>
+              ⚡ Run Presentation Demo
+            </span>
+          </button>
+        </div>
+      </div>
+      <div
+        class="flex items-center gap-6"
+      >
+        <div
+          class="text-right"
+        >
+          <span
+            class="text-[10px] font-bold text-slate-400 uppercase tracking-wider"
+          >
+            Avg wait times
+          </span>
+          <div
+            class="text-base font-black text-blue-400 font-mono mt-0.5"
+          >
+            <span
+              class="animate-number-pulse"
+            >
+              10.5
+            </span>
+             mins
+          </div>
+        </div>
+        <div
+          class="text-right"
+        >
+          <span
+            class="text-[10px] font-bold text-slate-400 uppercase tracking-wider"
+          >
+            Security State
+          </span>
+          <div
+            class="text-base font-black text-emerald-400 font-mono mt-0.5"
+          >
+            Normal Grid
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5"
+    >
+      <div
+        class="
+        bg-slate-900/50 backdrop-blur-md 
+        border border-slate-800/80 rounded-xl p-5 
+        shadow-lg shadow-slate-950/20 
+        transition-all duration-300 ease-out
+        hover:border-blue-500/30 hover:shadow-blue-500/5 hover:-translate-y-0.5
+        flex flex-col justify-between p-4.5
+      "
+      >
+        <div>
+          <div
+            class="flex justify-between items-start mb-2.5"
+          >
+            <span
+              class="text-[10px] font-bold tracking-wider text-slate-400 uppercase"
+            >
+              Stadium Occupancy
+            </span>
+            <div
+              class="p-1.5 rounded-lg bg-blue-500/10 text-blue-400"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-users h-4.5 w-4.5"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+                />
+                <path
+                  d="M16 3.128a4 4 0 0 1 0 7.744"
+                />
+                <path
+                  d="M22 21v-2a4 4 0 0 0-3-3.87"
+                />
+                <circle
+                  cx="9"
+                  cy="7"
+                  r="4"
+                />
+              </svg>
+            </div>
+          </div>
+          <div>
+            <div
+              class="text-2xl font-black tracking-tight text-slate-100 font-mono"
+            >
+              <span
+                class="animate-number-pulse"
+              >
+                50
+              </span>
+              %
+            </div>
+            <p
+              class="text-[10px] text-slate-400 mt-1.5 truncate"
+            >
+              <span
+                class="animate-number-pulse"
+              >
+                4,950
+              </span>
+               in attendance
+            </p>
+          </div>
+          <div
+            class="w-full bg-slate-950 h-1.5 rounded-full mt-3 overflow-hidden border border-slate-900"
+          >
+            <div
+              class="bg-blue-500 h-full rounded-full transition-all duration-500"
+              style="width: 50%;"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="
+        bg-slate-900/50 backdrop-blur-md 
+        border border-slate-800/80 rounded-xl p-5 
+        shadow-lg shadow-slate-950/20 
+        transition-all duration-300 ease-out
+        hover:border-blue-500/30 hover:shadow-blue-500/5 hover:-translate-y-0.5
+        flex flex-col justify-between p-4.5
+      "
+      >
+        <div>
+          <div
+            class="flex justify-between items-start mb-2.5"
+          >
+            <span
+              class="text-[10px] font-bold tracking-wider text-slate-400 uppercase"
+            >
+              Crowd Density
+            </span>
+            <div
+              class="p-1.5 rounded-lg bg-amber-500/10 text-amber-400"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-flame h-4.5 w-4.5"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"
+                />
+              </svg>
+            </div>
+          </div>
+          <div>
+            <div
+              class="text-2xl font-black tracking-tight text-slate-100 uppercase flex items-baseline gap-1.5"
+            >
+              <span
+                class="animate-number-pulse"
+              >
+                Moderate
+              </span>
+            </div>
+            <p
+              class="text-[10px] text-slate-400 mt-1.5 truncate"
+            >
+              Max wait: 
+              <span
+                class="animate-number-pulse font-mono"
+              >
+                14
+              </span>
+               mins
+            </p>
+          </div>
+          <div
+            class="mt-3 flex items-center gap-1.5 text-[10px] font-semibold text-amber-400"
+          >
+            <span
+              class="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse"
+            />
+            <span>
+              Monitored grid
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        class="
+        bg-slate-900/50 backdrop-blur-md 
+        border border-slate-800/80 rounded-xl p-5 
+        shadow-lg shadow-slate-950/20 
+        transition-all duration-300 ease-out
+        hover:border-blue-500/30 hover:shadow-blue-500/5 hover:-translate-y-0.5
+        flex flex-col justify-between p-4.5
+      "
+      >
+        <div>
+          <div
+            class="flex justify-between items-start mb-2.5"
+          >
+            <span
+              class="text-[10px] font-bold tracking-wider text-slate-400 uppercase"
+            >
+              Gates Status
+            </span>
+            <div
+              class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-log-out h-4.5 w-4.5 rotate-180"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m16 17 5-5-5-5"
+                />
+                <path
+                  d="M21 12H9"
+                />
+                <path
+                  d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
+                />
+              </svg>
+            </div>
+          </div>
+          <div>
+            <div
+              class="text-2xl font-black tracking-tight text-slate-100 font-mono"
+            >
+              <span
+                class="animate-number-pulse"
+              >
+                2
+              </span>
+               active
+            </div>
+            <p
+              class="text-[10px] text-slate-400 mt-1.5 truncate"
+            >
+              Avg queue: 
+              <span
+                class="animate-number-pulse"
+              >
+                10.5
+              </span>
+               mins
+            </p>
+          </div>
+          <div
+            class="mt-3"
+          >
+            <span
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border transition-colors bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[9px] py-0"
+            >
+              All Gates Clear
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        class="
+        bg-slate-900/50 backdrop-blur-md 
+        border border-slate-800/80 rounded-xl p-5 
+        shadow-lg shadow-slate-950/20 
+        transition-all duration-300 ease-out
+        hover:border-blue-500/30 hover:shadow-blue-500/5 hover:-translate-y-0.5
+        flex flex-col justify-between p-4.5
+      "
+      >
+        <div>
+          <div
+            class="flex justify-between items-start mb-2.5"
+          >
+            <span
+              class="text-[10px] font-bold tracking-wider text-slate-400 uppercase"
+            >
+              Parking Lots
+            </span>
+            <div
+              class="p-1.5 rounded-lg bg-purple-500/10 text-purple-400"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-car h-4.5 w-4.5"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"
+                />
+                <circle
+                  cx="7"
+                  cy="17"
+                  r="2"
+                />
+                <path
+                  d="M9 17h6"
+                />
+                <circle
+                  cx="17"
+                  cy="17"
+                  r="2"
+                />
+              </svg>
+            </div>
+          </div>
+          <div>
+            <div
+              class="text-2xl font-black tracking-tight text-slate-100 font-mono"
+            >
+              <span
+                class="animate-number-pulse"
+              >
+                76
+              </span>
+              %
+            </div>
+            <p
+              class="text-[10px] text-slate-400 mt-1.5 truncate"
+            >
+              Lot A-D combined capacity
+            </p>
+          </div>
+          <div
+            class="w-full bg-slate-950 h-1.5 rounded-full mt-3 overflow-hidden border border-slate-900"
+          >
+            <div
+              class="bg-purple-500 h-full rounded-full transition-all duration-500"
+              style="width: 76%;"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="
+        bg-slate-900/50 backdrop-blur-md 
+        border border-slate-800/80 rounded-xl p-5 
+        shadow-lg shadow-slate-950/20 
+        transition-all duration-300 ease-out
+        hover:border-blue-500/30 hover:shadow-blue-500/5 hover:-translate-y-0.5
+        flex flex-col justify-between p-4.5
+      "
+      >
+        <div>
+          <div
+            class="flex justify-between items-start mb-2.5"
+          >
+            <span
+              class="text-[10px] font-bold tracking-wider text-slate-400 uppercase"
+            >
+              Weather Telemetry
+            </span>
+            <div
+              class="p-1.5 rounded-lg bg-sky-500/10 text-sky-400"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-cloud-sun h-4.5 w-4.5"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 2v2"
+                />
+                <path
+                  d="m4.93 4.93 1.41 1.41"
+                />
+                <path
+                  d="M20 12h2"
+                />
+                <path
+                  d="m19.07 4.93-1.41 1.41"
+                />
+                <path
+                  d="M15.947 12.65a4 4 0 0 0-5.925-4.128"
+                />
+                <path
+                  d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"
+                />
+              </svg>
+            </div>
+          </div>
+          <div>
+            <div
+              class="text-2xl font-black tracking-tight text-slate-100"
+            >
+              Clear
+            </div>
+            <p
+              class="text-[10px] text-slate-400 mt-1.5 truncate"
+            >
+              Rain impact: 
+              Normal
+            </p>
+          </div>
+          <div
+            class="mt-3 flex items-center gap-1.5 text-[10px] font-semibold text-emerald-400"
+          >
+            <span
+              class="h-1.5 w-1.5 rounded-full bg-emerald-400"
+            />
+            <span>
+              Sensor telemetry active
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        class="
+        bg-slate-900/50 backdrop-blur-md 
+        border border-slate-800/80 rounded-xl p-5 
+        shadow-lg shadow-slate-950/20 
+        transition-all duration-300 ease-out
+        hover:border-blue-500/30 hover:shadow-blue-500/5 hover:-translate-y-0.5
+        flex flex-col justify-between p-4.5 border-blue-500/10
+      "
+      >
+        <div>
+          <div
+            class="flex justify-between items-start mb-2.5"
+          >
+            <span
+              class="text-[10px] font-bold tracking-wider text-slate-400 uppercase"
+            >
+              Operational Score
+            </span>
+            <div
+              class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-gauge h-4.5 w-4.5"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m12 14 4-4"
+                />
+                <path
+                  d="M3.34 19a10 10 0 1 1 17.32 0"
+                />
+              </svg>
+            </div>
+          </div>
+          <div>
+            <div
+              class="text-2xl font-black tracking-tight text-slate-100 font-mono flex items-center gap-1"
+            >
+              <span
+                class="animate-number-pulse"
+              >
+                94
+              </span>
+              <span
+                class="text-[10px] text-emerald-400 flex items-center font-bold"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="lucide lucide-trending-up h-3 w-3 inline"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M16 7h6v6"
+                  />
+                  <path
+                    d="m22 7-8.5 8.5-5-5L2 17"
+                  />
+                </svg>
+                 +1.2%
+              </span>
+            </div>
+            <p
+              class="text-[10px] text-slate-400 mt-1.5 truncate"
+            >
+              Overall flow index rating
+            </p>
+          </div>
+          <div
+            class="mt-3"
+          >
+            <span
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border transition-colors bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[9px] py-0"
+            >
+              Optimal Grid
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="grid grid-cols-1 lg:grid-cols-2 gap-6"
+    >
+      <div
+        data-testid="crowd-chart"
+      >
+        Mock Crowd Chart
+      </div>
+      <div
+        data-testid="gate-chart"
+      >
+        Mock Gate Chart
+      </div>
+    </div>
+    <div
+      class="grid grid-cols-1 xl:grid-cols-2 gap-6"
+    >
+      <div
+        class="
+        bg-slate-900/50 backdrop-blur-md 
+        border border-slate-800/80 rounded-xl p-5 
+        shadow-lg shadow-slate-950/20 
+        transition-all duration-300 ease-out
+        
+        
+      "
+      >
+        <div
+          class="flex justify-between items-start mb-4 gap-4"
+        >
+          <div>
+            <h3
+              class="text-sm font-semibold tracking-wider text-slate-400 uppercase"
+            >
+              GenAI Operational Decision Engine
+            </h3>
+            <p
+              class="text-xs text-slate-400 mt-0.5"
+            >
+              Autonomous reasoning and real-time decision support recommendations
+            </p>
+          </div>
+          <div
+            class="text-xs"
+          >
+            <div
+              class="flex items-center gap-1"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-brain-circuit h-4 w-4 text-blue-400"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"
+                />
+                <path
+                  d="M9 13a4.5 4.5 0 0 0 3-4"
+                />
+                <path
+                  d="M6.003 5.125A3 3 0 0 0 6.401 6.5"
+                />
+                <path
+                  d="M3.477 10.896a4 4 0 0 1 .585-.396"
+                />
+                <path
+                  d="M6 18a4 4 0 0 1-1.967-.516"
+                />
+                <path
+                  d="M12 13h4"
+                />
+                <path
+                  d="M12 18h6a2 2 0 0 1 2 2v1"
+                />
+                <path
+                  d="M12 8h8"
+                />
+                <path
+                  d="M16 8V5a2 2 0 0 1 2-2"
+                />
+                <circle
+                  cx="16"
+                  cy="13"
+                  r=".5"
+                />
+                <circle
+                  cx="18"
+                  cy="3"
+                  r=".5"
+                />
+                <circle
+                  cx="20"
+                  cy="21"
+                  r=".5"
+                />
+                <circle
+                  cx="20"
+                  cy="8"
+                  r=".5"
+                />
+              </svg>
+              <span
+                class="text-[9px] text-blue-400 font-bold uppercase tracking-wider"
+              >
+                Simulation Engine Active
+              </span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div
+            class="mt-4 space-y-4 max-h-[460px] overflow-y-auto pr-1"
+          >
+            <div
+              class="
+                      p-4 rounded-xl border bg-slate-950/30 flex flex-col gap-3 transition-all hover:bg-slate-900/10
+                      border-slate-800
+                      animate-card-fade-in opacity-0
+                      
+                      
+                    "
+              style="animation-delay: 0ms;"
+            >
+              <div
+                class="flex justify-between items-center gap-2"
+              >
+                <div
+                  class="flex items-center gap-2"
+                >
+                  <span
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border transition-colors bg-amber-500/10 text-amber-400 border-amber-500/20 "
+                  >
+                    High
+                  </span>
+                  <span
+                    class="text-[10px] text-blue-400 font-mono font-extrabold"
+                  >
+                    Conf: 
+                    88
+                    %
+                  </span>
+                </div>
+                <span
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border transition-colors bg-slate-500/10 text-slate-400 border-slate-500/20 text-[9px] px-1.5 py-0 uppercase"
+                >
+                  Pending
+                </span>
+              </div>
+              <div
+                class="space-y-1"
+              >
+                <h4
+                  class="text-xs font-black text-blue-400 uppercase tracking-wider"
+                >
+                  Reroute Ingress Flow: Gate B to Gate A
+                </h4>
+                <p
+                  class="text-[11px] text-slate-300 font-medium leading-relaxed"
+                >
+                  Redirect incoming crowd flow from Congested Gate B to underloaded Gate A.
+                </p>
+              </div>
+              <div>
+                <span
+                  class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block"
+                >
+                  Action Directive:
+                </span>
+                <p
+                  class="text-xs text-slate-100 font-extrabold mt-1 leading-relaxed bg-slate-950/60 p-2.5 rounded-lg border border-slate-900"
+                >
+                  Redirect 35% of ingress arrivals from Gate B to Gate A.
+                </p>
+              </div>
+              <div
+                class="grid grid-cols-2 gap-3 text-[10px] bg-slate-950/30 p-2.5 rounded-lg border border-slate-900/60"
+              >
+                <div>
+                  <span
+                    class="text-slate-400 block"
+                  >
+                    Queue Reduction
+                  </span>
+                  <span
+                    class="text-slate-200 font-bold font-mono"
+                  >
+                    25%
+                  </span>
+                </div>
+                <div>
+                  <span
+                    class="text-slate-400 block"
+                  >
+                    Resolution ETA
+                  </span>
+                  <span
+                    class="text-slate-200 font-bold font-mono"
+                  />
+                </div>
+                <div>
+                  <span
+                    class="text-slate-400 block"
+                  >
+                    Staff Needed
+                  </span>
+                  <span
+                    class="text-slate-200 font-bold font-mono"
+                  >
+                    4 stewards
+                  </span>
+                </div>
+                <div>
+                  <span
+                    class="text-slate-400 block"
+                  >
+                    Impact projection
+                  </span>
+                  <span
+                    class="text-slate-200 font-bold truncate block"
+                  />
+                </div>
+              </div>
+              <div
+                class="flex gap-2 justify-end pt-1 border-t border-slate-900/60"
+              >
+                <button
+                  aria-label="Explain decision details for recommendation: Reroute Ingress Flow: Gate B to Gate A"
+                  class="inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed px-3 py-1.5 text-xs bg-transparent hover:bg-slate-800 text-slate-400 hover:text-slate-200 text-[10px] font-bold gap-1"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-circle-question-mark h-3.5 w-3.5"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="10"
+                    />
+                    <path
+                      d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"
+                    />
+                    <path
+                      d="M12 17h.01"
+                    />
+                  </svg>
+                  <span>
+                    Explain Decision
+                  </span>
+                </button>
+                <button
+                  aria-label="Reject recommendation: Reroute Ingress Flow: Gate B to Gate A"
+                  class="inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 active:bg-slate-900 text-slate-200 border border-slate-700/80 text-[10px] text-rose-400 border-rose-950/20 hover:bg-rose-500/10 px-2.5"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-x h-3.5 w-3.5"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M18 6 6 18"
+                    />
+                    <path
+                      d="m6 6 12 12"
+                    />
+                  </svg>
+                </button>
+                <button
+                  aria-label="Approve recommendation: Reroute Ingress Flow: Gate B to Gate A"
+                  class="inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed px-3 py-1.5 text-xs bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white shadow-md shadow-blue-900/10 hover:shadow-blue-500/25 text-[10px] bg-blue-600 hover:bg-blue-500 text-slate-100 px-3.5"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="lucide lucide-check h-3.5 w-3.5"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M20 6 9 17l-5-5"
+                    />
+                  </svg>
+                  <span>
+                    Approve
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="
+        bg-slate-900/50 backdrop-blur-md 
+        border border-slate-800/80 rounded-xl p-5 
+        shadow-lg shadow-slate-950/20 
+        transition-all duration-300 ease-out
+        
+        
+      "
+      >
+        <div
+          class="flex justify-between items-start mb-4 gap-4"
+        >
+          <div>
+            <h3
+              class="text-sm font-semibold tracking-wider text-slate-400 uppercase"
+            >
+              Operational Decision Timeline
+            </h3>
+            <p
+              class="text-xs text-slate-400 mt-0.5"
+            >
+              Audit log registry tracking chronological AI dispatches and manager approvals
+            </p>
+          </div>
+        </div>
+        <div>
+          <div
+            class="mt-4 space-y-4 max-h-[460px] overflow-y-auto pr-1"
+          >
+            <div
+              class="h-36 flex items-center justify-center text-slate-400 text-xs font-semibold border border-slate-900 rounded-xl bg-slate-950/20"
+            >
+              Timeline logs await dataset uploads...
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="grid grid-cols-1 gap-6"
+    >
+      <div
+        data-testid="intel-section"
+      >
+        Mock Intel Section
+      </div>
+    </div>
+  </div>
+</div>
+`;

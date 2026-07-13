@@ -34,14 +34,14 @@ export const IntelSection = () => {
           >
             <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
           </button>
-          <span className="font-mono text-[10px] text-slate-500 font-semibold uppercase">Sensor Network: OK</span>
+          <span className="font-mono text-[10px] text-slate-400 font-semibold uppercase">Sensor Network: OK</span>
         </div>
       }
     >
       {/* Search and Filters */}
       <div className="flex flex-col sm:flex-row gap-3 items-center justify-between border-b border-slate-800/60 pb-4 mb-4 mt-2">
         <div className="relative w-full sm:w-48">
-          <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-500" />
+          <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
           <input 
             type="text" 
             placeholder="Search logs..." 
@@ -93,9 +93,9 @@ export const IntelSection = () => {
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <Badge variant={badgeVariant}>{evt.category}</Badge>
-                    <span className="text-[10px] text-slate-500 font-mono font-semibold">{evt.location}</span>
+                    <span className="text-[10px] text-slate-400 font-mono font-semibold">{evt.location}</span>
                   </div>
-                  <span className="text-[10px] text-slate-500 font-mono font-semibold">{evt.timestamp}</span>
+                  <span className="text-[10px] text-slate-400 font-mono font-semibold">{evt.timestamp}</span>
                 </div>
                 <p className="text-xs text-slate-300 mt-1.5 font-medium leading-relaxed">{evt.message}</p>
                 

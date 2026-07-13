@@ -82,7 +82,7 @@ export const Sidebar = ({ collapsed, setCollapsed }) => {
       <div className="p-4 border-t border-slate-800/60 flex justify-center">
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="flex items-center justify-center p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors focus:outline-none border border-slate-700/50"
+          className="flex items-center justify-center p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/50 border border-slate-700/50"
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed ? (

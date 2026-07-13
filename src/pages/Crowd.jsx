@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
 import { recommendationEngine } from '../utils/recommendationEngine';
-import { Users, ShieldAlert, Eye, Flame, Shield } from 'lucide-react';
+import { Users } from 'lucide-react';
 
 export const Crowd = () => {
   const [activeSnapshot, setActiveSnapshot] = useState(null);
@@ -56,26 +56,26 @@ export const Crowd = () => {
       {/* Primary Metrics Row */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
         <Card hover className="p-4 bg-slate-900/40">
-          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Crowd Heat Index</span>
+          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Crowd Heat Index</span>
           <div className="text-xl font-black text-slate-100 font-mono mt-1">
             {activeSnapshot ? activeSnapshot.crowdDensityLevel : 'Moderate'}
           </div>
           <p className="text-[10px] text-slate-400 mt-1">Overall density rating</p>
         </Card>
         <Card hover className="p-4 bg-slate-900/40">
-          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Active incident logs</span>
+          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Active incident logs</span>
           <div className="text-xl font-black text-rose-400 font-mono mt-1">
             {activeSnapshot ? activeSnapshot.incidents.length : 0} Override Flags
           </div>
           <p className="text-[10px] text-slate-400 mt-1">Telemetry bypass overrides</p>
         </Card>
         <Card hover className="p-4 bg-slate-900/40">
-          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Patrol Teams Dispatched</span>
+          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Patrol Teams Dispatched</span>
           <div className="text-xl font-black text-slate-100 font-mono mt-1">{totalPatrols} Officers</div>
           <p className="text-[10px] text-slate-400 mt-1">Across active perimeter grids</p>
         </Card>
         <Card hover className="p-4 bg-slate-900/40">
-          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Peak queue wait</span>
+          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Peak queue wait</span>
           <div className="text-xl font-black text-blue-400 font-mono mt-1">
             {activeSnapshot ? activeSnapshot.maxQueueTime : 0} mins max
           </div>
@@ -87,14 +87,15 @@ export const Crowd = () => {
       <Card title="Sector Heatmap Details" subtitle="Telemetry readings from overhead perimeter optical scanners">
         <div className="mt-4 overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
+            <caption className="sr-only">Perimeter zones crowding density and security patrol deployment actions</caption>
             <thead>
-              <tr className="border-b border-slate-800 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
-                <th className="py-3 px-4">Zone Description</th>
-                <th className="py-3 px-4">Occupancy</th>
-                <th className="py-3 px-4">Density Level</th>
-                <th className="py-3 px-4">Safety Risk</th>
-                <th className="py-3 px-4">Staff Count</th>
-                <th className="py-3 px-4 text-right">Actions</th>
+              <tr className="border-b border-slate-800 text-slate-400 font-bold uppercase tracking-wider text-[10px]">
+                <th scope="col" className="py-3 px-4">Zone Description</th>
+                <th scope="col" className="py-3 px-4">Occupancy</th>
+                <th scope="col" className="py-3 px-4">Density Level</th>
+                <th scope="col" className="py-3 px-4">Safety Risk</th>
+                <th scope="col" className="py-3 px-4">Staff Count</th>
+                <th scope="col" className="py-3 px-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60 font-medium">
@@ -104,7 +105,9 @@ export const Crowd = () => {
                 
                 return (
                   <tr key={idx} className="hover:bg-slate-900/20 text-slate-300">
-                    <td className="py-3 px-4 font-bold text-slate-200">{zone.name}</td>
+                    <th scope="row" className="py-3 px-4 font-bold text-slate-200 text-left font-normal">
+                      {zone.name}
+                    </th>
                     <td className="py-3 px-4 font-mono">
                       <div className="flex items-center gap-2">
                         <div className="w-16 bg-slate-950 h-1.5 rounded-full overflow-hidden border border-slate-900">
@@ -128,7 +131,8 @@ export const Crowd = () => {
                     <td className="py-3 px-4 text-right">
                       <button 
                         onClick={() => alert(`Deploying additional patrols to ${zone.name}`)}
-                        className="text-[10px] font-bold text-blue-400 hover:text-blue-300 uppercase tracking-wide"
+                        className="text-[10px] font-bold text-blue-400 hover:text-blue-300 uppercase tracking-wide focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded-sm"
+                        aria-label={`Deploy additional patrol to ${zone.name}`}
                       >
                         Deploy Patrol
                       </button>

@@ -125,7 +125,7 @@ export const Header = () => {
           <Clock className="h-4 w-4 text-blue-500" />
           <div className="text-right">
             <div className="font-mono text-sm font-semibold tracking-wide leading-none">{formatSystemTime(currentTime)}</div>
-            <div className="text-[10px] text-slate-500 mt-0.5 tracking-wider uppercase font-semibold">{formatSystemDate(currentTime)}</div>
+            <div className="text-[10px] text-slate-400 mt-0.5 tracking-wider uppercase font-semibold">{formatSystemDate(currentTime)}</div>
           </div>
         </div>
 
@@ -133,8 +133,10 @@ export const Header = () => {
         <div className="relative">
           <button 
             onClick={() => setShowNotifications(!showNotifications)}
-            className="relative p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors border border-slate-700/60 focus:outline-none"
+            className="relative p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors border border-slate-700/60 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
             aria-label="Alert notifications"
+            aria-expanded={showNotifications}
+            aria-haspopup="true"
           >
             <Bell className="h-5 w-5" />
             {hasLiveAlerts && (
@@ -147,7 +149,11 @@ export const Header = () => {
               {/* Overlay background to dismiss when clicking outside */}
               <div className="fixed inset-0 z-30" onClick={() => setShowNotifications(false)}></div>
               
-              <div className="absolute right-0 mt-2.5 w-80 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl overflow-hidden z-40 animate-scale-up">
+              <div 
+                className="absolute right-0 mt-2.5 w-80 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl overflow-hidden z-40 animate-scale-up"
+                role="region"
+                aria-label="System alert notifications list"
+              >
                 <div className="p-3 bg-slate-950 border-b border-slate-800 flex justify-between items-center">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Live System Alerts</span>
                   <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${

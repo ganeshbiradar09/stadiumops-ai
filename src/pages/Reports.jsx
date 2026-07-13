@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Card } from '../components/common/Card';
-import { Badge } from '../components/common/Badge';
 import { Button } from '../components/common/Button';
 import { recommendationEngine } from '../utils/recommendationEngine';
-import { FileText, Download, Calendar, CheckSquare, Search, Filter } from 'lucide-react';
+import { FileText, Download, Calendar, CheckSquare } from 'lucide-react';
 
 export const Reports = () => {
   const [reportType, setReportType] = useState('genai');
@@ -112,7 +111,7 @@ export const Reports = () => {
       if (timeline.length === 0) {
         content += "Timeline registry empty.\n";
       } else {
-        timeline.forEach((evt, idx) => {
+        timeline.forEach((evt, _idx) => {
           content += `[${evt.timestamp}] Incident: ${evt.incident} | Status: ${evt.status}\n`;
           content += `  Recommendation: ${evt.recommendation}\n`;
           content += `  Outcome Log: ${evt.outcome}\n\n`;
@@ -160,7 +159,7 @@ export const Reports = () => {
             <form onSubmit={handleGenerate} className="mt-4 space-y-4">
               {/* Report Type */}
               <div className="space-y-2">
-                <label className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Report Profile</label>
+                <label className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Report Profile</label>
                 <div className="space-y-2">
                   {[
                     { id: 'genai', label: 'GenAI Decision & Reasoning Export' },
@@ -170,7 +169,7 @@ export const Reports = () => {
                     <label 
                       key={opt.id}
                       className={`
-                        flex items-center gap-3 p-3 rounded-lg border text-xs font-semibold cursor-pointer transition-all
+                        flex items-center gap-3 p-3 rounded-lg border text-xs font-semibold cursor-pointer transition-all focus-within:ring-2 focus-within:ring-blue-500/50
                         ${reportType === opt.id 
                           ? 'bg-blue-600/10 border-blue-500/30 text-slate-200' 
                           : 'bg-slate-950/40 border-slate-900 text-slate-400 hover:bg-slate-900/20'
@@ -183,7 +182,7 @@ export const Reports = () => {
                         value={opt.id}
                         checked={reportType === opt.id}
                         onChange={() => setReportType(opt.id)}
-                        className="hidden"
+                        className="sr-only"
                       />
                       <CheckSquare className={`h-4 w-4 shrink-0 ${reportType === opt.id ? 'text-blue-400' : 'text-slate-700'}`} />
                       <span>{opt.label}</span>
@@ -194,11 +193,12 @@ export const Reports = () => {
 
               {/* Time Range */}
               <div>
-                <label className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">Time Horizon</label>
+                <label htmlFor="timeHorizon" className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1">Time Horizon</label>
                 <div className="relative">
-                  <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-500" />
+                  <Calendar className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
                   <select 
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-300 focus:outline-none appearance-none cursor-pointer"
+                    id="timeHorizon"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 appearance-none cursor-pointer"
                     disabled
                   >
                     <option>Current Active Match (Match Day 14)</option>
@@ -233,7 +233,7 @@ export const Reports = () => {
                     </div>
                     <div className="min-w-0">
                       <h4 className="text-xs font-bold text-slate-200 truncate">{rep.title}</h4>
-                      <p className="text-[10px] text-slate-500 mt-0.5 font-mono">
+                      <p className="text-[10px] text-slate-400 mt-0.5 font-mono">
                         ID: {rep.id} | Compiled: {rep.date} | Format: {rep.type}
                       </p>
                     </div>
@@ -242,8 +242,9 @@ export const Reports = () => {
                     <span className="text-xs text-slate-400 hidden sm:inline">{rep.size}</span>
                     <button 
                       onClick={() => handleDownload(rep)}
-                      className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors border border-slate-700/60"
+                      className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors border border-slate-700/60 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                       title="Download report"
+                      aria-label={`Download report: ${rep.title}`}
                     >
                       <Download className="h-4.5 w-4.5" />
                     </button>

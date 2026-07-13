@@ -1,0 +1,394 @@
+﻿
+  ! eslint(no-unused-vars): Parameter 'col' is declared but never used. Unused parameters should start with a '_'.
+    ,-[src/services/firebaseService.test.js:24:35]
+ 23 |   
+ 24 |   const addDocMock = vi.fn(async (col, data) => {
+    :                                   ^|^
+    :                                    `-- 'col' is declared here
+ 25 |     if (mockShouldFail) throw new Error("Firestore permission denied or timeout");
+    `----
+  help: Consider removing this parameter.
+
+  ! eslint(no-unused-vars): Parameter 'data' is declared but never used. Unused parameters should start with a '_'.
+    ,-[src/services/firebaseService.test.js:24:40]
+ 23 |   
+ 24 |   const addDocMock = vi.fn(async (col, data) => {
+    :                                        ^^|^
+    :                                          `-- 'data' is declared here
+ 25 |     if (mockShouldFail) throw new Error("Firestore permission denied or timeout");
+    `----
+  help: Consider removing this parameter.
+
+  ! eslint(no-unused-vars): Parameter 'col' is declared but never used. Unused parameters should start with a '_'.
+    ,-[src/services/firebaseService.test.js:29:36]
+ 28 | 
+ 29 |   const getDocsMock = vi.fn(async (col) => {
+    :                                    ^|^
+    :                                     `-- 'col' is declared here
+ 30 |     if (mockShouldFail) throw new Error("Network unavailable");
+    `----
+  help: Consider removing this parameter.
+
+  ! eslint(no-unused-vars): Parameter 'docRef' is declared but never used. Unused parameters should start with a '_'.
+    ,-[src/services/firebaseService.test.js:39:38]
+ 38 | 
+ 39 |   const updateDocMock = vi.fn(async (docRef, data) => {
+    :                                      ^^^|^^
+    :                                         `-- 'docRef' is declared here
+ 40 |     if (mockShouldFail) throw new Error("Invalid schema or document missing");
+    `----
+  help: Consider removing this parameter.
+
+  ! eslint(no-unused-vars): Parameter 'data' is declared but never used. Unused parameters should start with a '_'.
+    ,-[src/services/firebaseService.test.js:39:46]
+ 38 | 
+ 39 |   const updateDocMock = vi.fn(async (docRef, data) => {
+    :                                              ^^|^
+    :                                                `-- 'data' is declared here
+ 40 |     if (mockShouldFail) throw new Error("Invalid schema or document missing");
+    `----
+  help: Consider removing this parameter.
+
+  ! eslint(no-unused-vars): Identifier 'Badge' is imported but never used.
+   ,-[src/pages/Reports.jsx:3:10]
+ 2 | import { Card } from '../components/common/Card';
+ 3 | import { Badge } from '../components/common/Badge';
+   :          ^^|^^
+   :            `-- 'Badge' is imported here
+ 4 | import { Button } from '../components/common/Button';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Search' is imported but never used.
+   ,-[src/pages/Reports.jsx:6:53]
+ 5 | import { recommendationEngine } from '../utils/recommendationEngine';
+ 6 | import { FileText, Download, Calendar, CheckSquare, Search, Filter } from 'lucide-react';
+   :                                                     ^^^|^^
+   :                                                        `-- 'Search' is imported here
+ 7 | 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Filter' is imported but never used.
+   ,-[src/pages/Reports.jsx:6:61]
+ 5 | import { recommendationEngine } from '../utils/recommendationEngine';
+ 6 | import { FileText, Download, Calendar, CheckSquare, Search, Filter } from 'lucide-react';
+   :                                                             ^^^|^^
+   :                                                                `-- 'Filter' is imported here
+ 7 | 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Parameter 'idx' is declared but never used. Unused parameters should start with a '_'.
+     ,-[src/pages/Reports.jsx:115:32]
+ 114 |       } else {
+ 115 |         timeline.forEach((evt, idx) => {
+     :                                ^|^
+     :                                 `-- 'idx' is declared here
+ 116 |           content += `[${evt.timestamp}] Incident: ${evt.incident} | Status: ${evt.status}\n`;
+     `----
+  help: Consider removing this parameter.
+
+  ! eslint(no-unused-vars): Identifier 'AlertTriangle' is imported but never used.
+   ,-[src/components/dashboard/RecSection.jsx:5:38]
+ 4 | import { genAiDecisions } from '../../data/mockStadiumData';
+ 5 | import { BrainCircuit, CheckCircle2, AlertTriangle, ArrowRight, Play } from 'lucide-react';
+   :                                      ^^^^^^|^^^^^^
+   :                                            `-- 'AlertTriangle' is imported here
+ 6 | 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Sliders' is imported but never used.
+   ,-[src/pages/Settings.jsx:4:20]
+ 3 | import { Button } from '../components/common/Button';
+ 4 | import { Settings, Sliders, Shield, BellRing, Cpu } from 'lucide-react';
+   :                    ^^^|^^^
+   :                       `-- 'Sliders' is imported here
+ 5 | 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Shield' is imported but never used.
+   ,-[src/pages/Settings.jsx:4:29]
+ 3 | import { Button } from '../components/common/Button';
+ 4 | import { Settings, Sliders, Shield, BellRing, Cpu } from 'lucide-react';
+   :                             ^^^|^^
+   :                                `-- 'Shield' is imported here
+ 5 | 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Variable 'initialGateBQueue' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/hooks/useStadiumData.test.js:26:11]
+ 25 |     
+ 26 |     const initialGateBQueue = result.current.gatesList.find(g => g.id === 'gate-b').queueTime;
+    :           ^^^^^^^^|^^^^^^^^
+    :                   `-- 'initialGateBQueue' is declared here
+ 27 |     
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Identifier 'ShieldAlert' is imported but never used.
+   ,-[src/pages/Crowd.jsx:5:17]
+ 4 | import { recommendationEngine } from '../utils/recommendationEngine';
+ 5 | import { Users, ShieldAlert, Eye, Flame, Shield } from 'lucide-react';
+   :                 ^^^^^|^^^^^
+   :                      `-- 'ShieldAlert' is imported here
+ 6 | 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Eye' is imported but never used.
+   ,-[src/pages/Crowd.jsx:5:30]
+ 4 | import { recommendationEngine } from '../utils/recommendationEngine';
+ 5 | import { Users, ShieldAlert, Eye, Flame, Shield } from 'lucide-react';
+   :                              ^|^
+   :                               `-- 'Eye' is imported here
+ 6 | 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Flame' is imported but never used.
+   ,-[src/pages/Crowd.jsx:5:35]
+ 4 | import { recommendationEngine } from '../utils/recommendationEngine';
+ 5 | import { Users, ShieldAlert, Eye, Flame, Shield } from 'lucide-react';
+   :                                   ^^|^^
+   :                                     `-- 'Flame' is imported here
+ 6 | 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Shield' is imported but never used.
+   ,-[src/pages/Crowd.jsx:5:42]
+ 4 | import { recommendationEngine } from '../utils/recommendationEngine';
+ 5 | import { Users, ShieldAlert, Eye, Flame, Shield } from 'lucide-react';
+   :                                          ^^^|^^
+   :                                             `-- 'Shield' is imported here
+ 6 | 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Car' is imported but never used.
+   ,-[src/pages/Transit.jsx:5:15]
+ 4 | import { recommendationEngine } from '../utils/recommendationEngine';
+ 5 | import { Bus, Car, Train, Signal, ShieldAlert } from 'lucide-react';
+   :               ^|^
+   :                `-- 'Car' is imported here
+ 6 | import { formatNumber, formatPercent } from '../utils/formatters';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Signal' is imported but never used.
+   ,-[src/pages/Transit.jsx:5:27]
+ 4 | import { recommendationEngine } from '../utils/recommendationEngine';
+ 5 | import { Bus, Car, Train, Signal, ShieldAlert } from 'lucide-react';
+   :                           ^^^|^^
+   :                              `-- 'Signal' is imported here
+ 6 | import { formatNumber, formatPercent } from '../utils/formatters';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'formatPercent' is imported but never used.
+   ,-[src/pages/Transit.jsx:6:24]
+ 5 | import { Bus, Car, Train, Signal, ShieldAlert } from 'lucide-react';
+ 6 | import { formatNumber, formatPercent } from '../utils/formatters';
+   :                        ^^^^^^|^^^^^^
+   :                              `-- 'formatPercent' is imported here
+ 7 | 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Variable 'activeSnapshot' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/pages/Transit.jsx:9:10]
+  8 | export const Transit = () => {
+  9 |   const [activeSnapshot, setActiveSnapshot] = useState(null);
+    :          ^^^^^^^|^^^^^^
+    :                 `-- 'activeSnapshot' is declared here
+ 10 |   const [parkingOccupancy, setParkingOccupancy] = useState(86);
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'occupiedSpots' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/pages/Transit.jsx:30:9]
+ 29 |   const totalSpots = 12000;
+ 30 |   const occupiedSpots = Math.round(totalSpots * (parkingOccupancy / 100));
+    :         ^^^^^^|^^^^^^
+    :               `-- 'occupiedSpots' is declared here
+ 31 | 
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Identifier 'waitFor' is imported but never used.
+   ,-[src/pages/userFlow.test.jsx:2:42]
+ 1 | import React from 'react';
+ 2 | import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
+   :                                          ^^^|^^^
+   :                                             `-- 'waitFor' is imported here
+ 3 | import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Variable 'parseSpy' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/pages/userFlow.test.jsx:58:11]
+ 57 |   test('successfully executes the full cycle: load scenario -> AI analysis -> review explain modal -> approve recommendation -> update metrics', async () => {
+ 58 |     const parseSpy = vi.spyOn(recommendationEngine, 'processNewDataset');
+    :           ^^^^|^^^
+    :               `-- 'parseSpy' is declared here
+ 59 | 
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'rawCSV' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/pages/userFlow.test.jsx:61:11]
+ 60 |     // 1. Ingest a synthetic dataset csv scenario using the engine
+ 61 |     const rawCSV = `Gate, Queue Length, Occupancy, Capacity, Staff, Weather, Incident, Parking, Transit Delay, Time
+    :           ^^^|^^
+    :              `-- 'rawCSV' is declared here
+ 62 | Gate A, 30, 85%, 2000, 10, Clear, None, 50%, 0, 12:00
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Identifier 'LogIn' is imported but never used.
+   ,-[src/pages/Operations.jsx:6:43]
+ 5 | import { recommendationEngine } from '../utils/recommendationEngine';
+ 6 | import { ShieldCheck, ShieldAlert, Users, LogIn, Activity, Settings2, Sliders } from 'lucide-react';
+   :                                           ^^|^^
+   :                                             `-- 'LogIn' is imported here
+ 7 | import { formatNumber } from '../utils/formatters';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'formatNumber' is imported but never used.
+   ,-[src/pages/Operations.jsx:7:10]
+ 6 | import { ShieldCheck, ShieldAlert, Users, LogIn, Activity, Settings2, Sliders } from 'lucide-react';
+ 7 | import { formatNumber } from '../utils/formatters';
+   :          ^^^^^^|^^^^^
+   :                `-- 'formatNumber' is imported here
+ 8 | 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'useEffect' is imported but never used.
+   ,-[src/pages/DataSources.jsx:1:27]
+ 1 | import React, { useState, useEffect } from 'react';
+   :                           ^^^^|^^^^
+   :                               `-- 'useEffect' is imported here
+ 2 | import { useNavigate } from 'react-router-dom';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'CheckCircle2' is imported but never used.
+    ,-[src/pages/DataSources.jsx:11:38]
+ 10 | import { dataSourcesList } from '../data/mockStadiumData';
+ 11 | import { Database, Upload, FileText, CheckCircle2, ShieldAlert, Layers, Play, Settings2, Sliders, ToggleLeft, ToggleRight } from 'lucide-react';
+    :                                      ^^^^^^|^^^^^
+    :                                            `-- 'CheckCircle2' is imported here
+ 12 | 
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Play' is imported but never used.
+    ,-[src/pages/DataSources.jsx:11:73]
+ 10 | import { dataSourcesList } from '../data/mockStadiumData';
+ 11 | import { Database, Upload, FileText, CheckCircle2, ShieldAlert, Layers, Play, Settings2, Sliders, ToggleLeft, ToggleRight } from 'lucide-react';
+    :                                                                         ^^|^
+    :                                                                           `-- 'Play' is imported here
+ 12 | 
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Settings2' is imported but never used.
+    ,-[src/pages/DataSources.jsx:11:79]
+ 10 | import { dataSourcesList } from '../data/mockStadiumData';
+ 11 | import { Database, Upload, FileText, CheckCircle2, ShieldAlert, Layers, Play, Settings2, Sliders, ToggleLeft, ToggleRight } from 'lucide-react';
+    :                                                                               ^^^^|^^^^
+    :                                                                                   `-- 'Settings2' is imported here
+ 12 | 
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Sliders' is imported but never used.
+    ,-[src/pages/DataSources.jsx:11:90]
+ 10 | import { dataSourcesList } from '../data/mockStadiumData';
+ 11 | import { Database, Upload, FileText, CheckCircle2, ShieldAlert, Layers, Play, Settings2, Sliders, ToggleLeft, ToggleRight } from 'lucide-react';
+    :                                                                                          ^^^|^^^
+    :                                                                                             `-- 'Sliders' is imported here
+ 12 | 
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'waitFor' is imported but never used.
+   ,-[src/pages/Dashboard.test.jsx:2:42]
+ 1 | import React from 'react';
+ 2 | import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
+   :                                          ^^^|^^^
+   :                                             `-- 'waitFor' is imported here
+ 3 | import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Variable 'container' is declared but never used. Unused variables should start with a '_'.
+     ,-[src/pages/Dashboard.test.jsx:200:15]
+ 199 |     test('renders with no accessibility violations', async () => {
+ 200 |       const { container } = render(<Dashboard />);
+     :               ^^^^|^^^^
+     :                   `-- 'container' is declared here
+ 201 |       
+     `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Identifier 'CheckCircle2' is imported but never used.
+    ,-[src/pages/Dashboard.jsx:20:3]
+ 19 |   BrainCircuit, 
+ 20 |   CheckCircle2, 
+    :   ^^^^^^|^^^^^
+    :         `-- 'CheckCircle2' is imported here
+ 21 |   Clock, 
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'FileCode' is imported but never used.
+    ,-[src/pages/Dashboard.jsx:25:3]
+ 24 |   X,
+ 25 |   FileCode,
+    :   ^^^^|^^^
+    :       `-- 'FileCode' is imported here
+ 26 |   ShieldAlert
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'formatPercent' is imported but never used.
+    ,-[src/pages/Dashboard.jsx:28:24]
+ 27 | } from 'lucide-react';
+ 28 | import { formatNumber, formatPercent } from '../utils/formatters';
+    :                        ^^^^^^|^^^^^^
+    :                              `-- 'formatPercent' is imported here
+ 29 | 
+    `----
+  help: Consider removing this import.
+
+  ! react-hooks(exhaustive-deps): React Hook useEffect has a missing dependency: 'activeSnapshot'
+     ,-[src/pages/Dashboard.jsx:131:6]
+ 119 |   useEffect(() => {
+ 120 |     if (!activeSnapshot) {
+     :          ^^^^^^^|^^^^^^
+     :                 `-- useEffect uses `activeSnapshot` here
+ 121 |       const defaultRows = [
+ 122 |         { gate: "Gate A (North)", queueLength: 4, occupancy: 42, capacity: 15000, staff: 32, weather: "Clear", incident: "None", parking: 80, transitDelay: 0, time: "19:00" },
+ 123 |         { gate: "Gate B (East)", queueLength: 8, occupancy: 62, capacity: 20000, staff: 45, weather: "Clear", incident: "None", parking: 80, transitDelay: 0, time: "19:00" },
+ 124 |         { gate: "Gate C (Southeast)", queueLength: 7, occupancy: 58, capacity: 15000, staff: 35, weather: "Clear", incident: "None", parking: 80, transitDelay: 0, time: "19:00" },
+ 125 |         { gate: "Gate D (South)", queueLength: 5, occupancy: 45, capacity: 15000, staff: 32, weather: "Clear", incident: "None", parking: 80, transitDelay: 0, time: "19:00" },
+ 126 |         { gate: "Gate E (West)", queueLength: 6, occupancy: 48, capacity: 15000, staff: 32, weather: "Clear", incident: "None", parking: 80, transitDelay: 0, time: "19:00" },
+ 127 |         { gate: "Gate F (VIP/Skybox)", queueLength: 2, occupancy: 15, capacity: 5000, staff: 18, weather: "Clear", incident: "None", parking: 80, transitDelay: 0, time: "19:00" }
+ 128 |       ];
+ 129 |       recommendationEngine.processNewDataset(defaultRows, "Default Operational Feed");
+ 130 |     }
+ 131 |   }, []);
+     :      ^^
+ 132 | 
+     `----
+  help: Either include it or remove the dependency array.
+
+Found 38 warnings and 0 errors.
+Finished in 16ms on 48 files with 91 rules using 8 threads.
