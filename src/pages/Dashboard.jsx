@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Badge } from '../components/common/Badge';
-import { CrowdChart } from '../components/dashboard/CrowdChart';
-import { GateChart } from '../components/dashboard/GateChart';
+import { TelemetryChartPanel } from '../components/dashboard/charts/TelemetryChartPanel';
 import { IntelSection } from '../components/dashboard/IntelSection';
 import { ExecutiveBriefingModal } from '../components/dashboard/ExecutiveBriefingModal';
 import { isAiMode } from '../services/geminiService'; 
@@ -357,10 +356,7 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
       />
 
       {/* Grid of Two Analytics Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <CrowdChart />
-        <GateChart />
-      </div>
+      <TelemetryChartPanel />
 
       {/* Dynamic Recommendation Panel & Operational Timeline Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
