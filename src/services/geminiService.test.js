@@ -3,6 +3,22 @@ import.meta.env.VITE_GEMINI_API_KEY = 'mock_key';
 
 import { describe, test, expect, vi, beforeEach, afterEach, beforeAll } from 'vitest';
 
+const { mockGenerateContent } = vi.hoisted(() => ({
+  mockGenerateContent: vi.fn()
+}));
+
+vi.mock('@google/genai', () => {
+  return {
+    GoogleGenAI: vi.fn().mockImplementation(function() {
+      return {
+        models: {
+          generateContent: mockGenerateContent
+        }
+      };
+    })
+  };
+});
+
 const originalApiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
 describe('geminiService.js unit tests', () => {
@@ -13,7 +29,7 @@ describe('geminiService.js unit tests', () => {
   });
 
   beforeEach(() => {
-    vi.stubGlobal('fetch', vi.fn());
+    mockGenerateContent.mockReset();
     localStorage.clear();
   });
 
@@ -137,10 +153,7 @@ describe('geminiService.js unit tests', () => {
     test('recovers and runs simulation when API responds with 429 Rate Limit', async () => {
       import.meta.env.VITE_GEMINI_API_KEY = 'mock_key';
 
-      fetch.mockResolvedValue({
-        ok: false,
-        status: 429
-      });
+      mockGenerateContent.mockRejectedValue(new Error('429 Too Many Requests'));
 
       const result = await service.generateRecommendations(mockSnapshot, 'Test Ingest');
       import.meta.env.VITE_GEMINI_API_KEY = originalApiKey;
@@ -152,10 +165,7 @@ describe('geminiService.js unit tests', () => {
     test('recovers when API responds with 500 Server Error', async () => {
       import.meta.env.VITE_GEMINI_API_KEY = 'mock_key';
 
-      fetch.mockResolvedValue({
-        ok: false,
-        status: 500
-      });
+      mockGenerateContent.mockRejectedValue(new Error('500 Internal Server Error'));
 
       const result = await service.generateRecommendations(mockSnapshot, 'Test Ingest');
       import.meta.env.VITE_GEMINI_API_KEY = originalApiKey;
@@ -167,19 +177,8 @@ describe('geminiService.js unit tests', () => {
     test('recovers when response returns malformed JSON text', async () => {
       import.meta.env.VITE_GEMINI_API_KEY = 'mock_key';
 
-      fetch.mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          candidates: [
-            {
-              content: {
-                parts: [
-                  { text: 'INVALID_JSON_STRING_NOT_PARSABLE' }
-                ]
-              }
-            }
-          ]
-        })
+      mockGenerateContent.mockResolvedValue({
+        text: 'INVALID_JSON_STRING_NOT_PARSABLE'
       });
 
       const result = await service.generateRecommendations(mockSnapshot, 'Test Ingest');
@@ -192,11 +191,8 @@ describe('geminiService.js unit tests', () => {
     test('recovers when candidate content parts are empty', async () => {
       import.meta.env.VITE_GEMINI_API_KEY = 'mock_key';
 
-      fetch.mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          candidates: []
-        })
+      mockGenerateContent.mockResolvedValue({
+        text: ''
       });
 
       const result = await service.generateRecommendations(mockSnapshot, 'Test Ingest');
@@ -219,19 +215,8 @@ describe('geminiService.js unit tests', () => {
         }
       ];
 
-      fetch.mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          candidates: [
-            {
-              content: {
-                parts: [
-                  { text: JSON.stringify(mockResponseRecs) }
-                ]
-              }
-            }
-          ]
-        })
+      mockGenerateContent.mockResolvedValue({
+        text: JSON.stringify(mockResponseRecs)
       });
 
       const mockSnapshot = {

@@ -615,7 +615,7 @@ exports[`Dashboard.jsx integration tests > accessibility and snapshot testing > 
               <span
                 class="animate-number-pulse"
               >
-                94
+                85
               </span>
               <span
                 class="text-[10px] text-emerald-400 flex items-center font-bold"

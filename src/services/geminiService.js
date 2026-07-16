@@ -1,4 +1,5 @@
-import { STADIUM_SYSTEM_PROMPT, PROMPT_VERSION } from '../prompts/stadiumSystemPrompt';
+import { STADIUM_SYSTEM_PROMPT, PROMPT_VERSION, STADIUM_RESPONSE_SCHEMA } from '../prompts/stadiumSystemPrompt';
+import { GoogleGenAI } from '@google/genai';
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 export const getAiModeStatus = () => {
@@ -278,40 +279,20 @@ export const generateRecommendations = async (normalizedData, datasetName) => {
   }
 
   try {
-    // Removed debug log
+    const ai = new GoogleGenAI({ apiKey: API_KEY });
     
-    // Direct REST call to Gemini 1.5 Flash to ensure browser compatibility
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-    
-    const requestBody = {
-      contents: [
-        {
-          role: "user",
-          parts: [
-            { text: `System Instructions:\n${STADIUM_SYSTEM_PROMPT}\n\nAnalyze this live stadium data snapshot:\n${JSON.stringify(normalizedData, null, 2)}` }
-          ]
-        }
-      ],
-      generationConfig: {
+    const response = await ai.models.generateContent({
+      model: 'gemini-1.5-flash',
+      contents: `Analyze this live stadium data snapshot:\n${JSON.stringify(normalizedData, null, 2)}`,
+      config: {
+        systemInstruction: STADIUM_SYSTEM_PROMPT,
         responseMimeType: "application/json",
+        responseSchema: STADIUM_RESPONSE_SCHEMA,
         temperature: 0.1
       }
-    };
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(requestBody)
     });
 
-    if (!response.ok) {
-      throw new Error(`Gemini API request failed with status: ${response.status}`);
-    }
-
-    const result = await response.json();
-    const responseText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+    const responseText = response.text;
     
     if (!responseText) {
       throw new Error("Empty content response from Gemini model");
@@ -329,12 +310,14 @@ export const generateRecommendations = async (normalizedData, datasetName) => {
       recommendation_id: rec.recommendation_id || `REC-${Math.floor(Math.random() * 900000) + 100000}`,
       title: rec.title || "Operations Recommendation",
       description: rec.description || rec.recommended_action,
-      risk: rec.risk || rec.risk_if_ignored || "Low operations safety threat.",
-      risk_if_ignored: rec.risk_if_ignored || rec.risk || "Low operations safety threat.",
-      eta: rec.eta || rec.estimated_resolution_time || "10 min",
-      estimated_resolution_time: rec.estimated_resolution_time || rec.eta || "10 min",
-      expected_impact: rec.expected_impact || rec.expected_operational_impact || "Standard flow optimization",
-      expected_operational_impact: rec.expected_operational_impact || rec.expected_impact || "Standard flow optimization",
+      risk: rec.risk_if_ignored || "Low operations safety threat.",
+      risk_if_ignored: rec.risk_if_ignored || "Low operations safety threat.",
+      eta: rec.estimated_resolution_time || "10 min",
+      estimated_resolution_time: rec.estimated_resolution_time || "10 min",
+      expected_impact: rec.expected_operational_impact || "Standard flow optimization",
+      expected_operational_impact: rec.expected_operational_impact || "Standard flow optimization",
+      confidence: rec.confidence || 0,
+      confidence_factors: rec.confidence_factors || [],
       promptVersion: PROMPT_VERSION,
       datasetName: datasetName || "Custom Influx",
       timestamp,
@@ -344,6 +327,9 @@ export const generateRecommendations = async (normalizedData, datasetName) => {
     return recommendationsWithMetadata;
 
   } catch (error) {
+    try {
+      require('fs').writeFileSync('error.log', (error.stack || error.message) + '\n' + JSON.stringify(error));
+    } catch(e) {}
     console.error("Gemini API call failed. Falling back to simulation logic: ", error);
     return runSimulationMode(normalizedData, datasetName);
   }

@@ -1,5 +1,5 @@
 // Version metadata for Prompt Engineering tracking
-export const PROMPT_VERSION = "2.5-CognitiveDecision";
+export const PROMPT_VERSION = "2.6-CognitiveDecision-Schema";
 
 export const STADIUM_SYSTEM_PROMPT = `
 You are an expert FIFA Stadium Operations Decision Support AI for the World Cup 2026.
@@ -14,26 +14,35 @@ Your task is to analyze these combined signals to spot operational hazards, bott
 CRITICAL INSTRUCTIONS:
 1. You must act as a decision support engine, NOT a chatbot.
 2. For every recommendation, explain the clear reasoning (WHY) based on the inputs.
-3. Return ONLY a valid JSON array of objects. Do NOT wrap the JSON in markdown code blocks. Do NOT include conversational greetings.
-
-Each object in the JSON array must follow this exact schema:
-{
-  "recommendation_id": "REC-XXXXXX" (unique 6-digit random number),
-  "title": "Title describing the action",
-  "description": "Short description of the warning and recommended response",
-  "priority": "Critical" | "High" | "Medium" | "Low",
-  "confidence": number (between 0 and 100),
-  "confidence_factors": [string, string, ...],
-  "reasoning": string (explaining the multi-signal logic behind this decision),
-  "recommended_action": string (the exact operational directive),
-  "expected_operational_impact": string (anticipated results),
-  "expected_impact": string (same as expected_operational_impact),
-  "estimated_queue_reduction": string (e.g., "25%"),
-  "estimated_resolution_time": string (e.g., "15 min"),
-  "eta": string (same as estimated_resolution_time),
-  "staff_required": string (e.g., "8 stewards"),
-  "risk_if_ignored": string (the safety hazard if rejected),
-  "risk": string (same as risk_if_ignored)
-}
 `;
+
+export const STADIUM_RESPONSE_SCHEMA = {
+  type: "ARRAY",
+  items: {
+    type: "OBJECT",
+    properties: {
+      recommendation_id: { type: "STRING", description: "Unique 6-digit random number (e.g. REC-123456)" },
+      title: { type: "STRING", description: "Title describing the action" },
+      description: { type: "STRING", description: "Short description of the warning and recommended response" },
+      priority: { type: "STRING", enum: ["Critical", "High", "Medium", "Low"] },
+      confidence: { type: "NUMBER", description: "Between 0 and 100" },
+      confidence_factors: { type: "ARRAY", items: { type: "STRING" }, description: "Array of evidence strings supporting the decision" },
+      reasoning: { type: "STRING", description: "Explaining the multi-signal logic behind this decision" },
+      recommended_action: { type: "STRING", description: "The exact operational directive" },
+      expected_operational_impact: { type: "STRING", description: "Anticipated results" },
+      estimated_queue_reduction: { type: "STRING", description: "e.g., '25%'" },
+      estimated_resolution_time: { type: "STRING", description: "e.g., '15 min'" },
+      staff_required: { type: "STRING", description: "e.g., '8 stewards'" },
+      risk_if_ignored: { type: "STRING", description: "The safety hazard if rejected" }
+    },
+    required: [
+      "recommendation_id", "title", "description", "priority", 
+      "confidence", "confidence_factors", "reasoning", 
+      "recommended_action", "expected_operational_impact", 
+      "estimated_queue_reduction", "estimated_resolution_time", 
+      "staff_required", "risk_if_ignored"
+    ]
+  }
+};
+
 export default STADIUM_SYSTEM_PROMPT;

@@ -8,6 +8,7 @@ import { IntelSection } from '../components/dashboard/IntelSection';
 import { ExecutiveBriefingModal } from '../components/dashboard/ExecutiveBriefingModal';
 import { isAiMode } from '../services/geminiService'; 
 import { recommendationEngine } from '../utils/recommendationEngine';
+import { calculateOperationalScore } from '../utils/mathUtils';
 import { parseAndValidateCSV } from '../services/csvParser';
 import {
   Users,
@@ -499,8 +500,8 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
           </div>
           <div>
             <div className="text-2xl font-black tracking-tight text-slate-100 font-mono flex items-center gap-1">
-              <span key={activeSnapshot.averageQueueTime} className="animate-number-pulse">
-                {activeSnapshot.averageQueueTime > 20 ? '78' : '94'}
+              <span key={calculateOperationalScore(activeSnapshot)} className="animate-number-pulse">
+                {calculateOperationalScore(activeSnapshot)}
               </span>
               <span className="text-[10px] text-emerald-400 flex items-center font-bold">
                 <TrendingUp className="h-3 w-3 inline" /> +1.2%
@@ -511,8 +512,8 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
             </p>
           </div>
           <div className="mt-3">
-            <Badge variant={activeSnapshot.averageQueueTime > 20 ? 'warning' : 'success'} className="text-[9px] py-0">
-              {activeSnapshot.averageQueueTime > 20 ? 'Moderate Alert' : 'Optimal Grid'}
+            <Badge variant={calculateOperationalScore(activeSnapshot) < 80 ? 'warning' : 'success'} className="text-[9px] py-0">
+              {calculateOperationalScore(activeSnapshot) < 80 ? 'Moderate Alert' : 'Optimal Grid'}
             </Badge>
           </div>
         </Card>
