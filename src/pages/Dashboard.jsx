@@ -8,22 +8,14 @@ import { IntelSection } from '../components/dashboard/IntelSection';
 import { ExecutiveBriefingModal } from '../components/dashboard/ExecutiveBriefingModal';
 import { isAiMode } from '../services/geminiService'; 
 import { recommendationEngine } from '../utils/recommendationEngine';
-import { calculateOperationalScore } from '../utils/mathUtils';
 import { parseAndValidateCSV } from '../services/csvParser';
+import { KPISection } from '../components/dashboard/kpi/KPISection';
 import {
-  Users,
-  Car,
-  CloudSun,
-  Flame, 
-  LogOut, 
-  Gauge, 
-  TrendingUp, 
   BrainCircuit, 
   HelpCircle,
   Check, 
   X
 } from 'lucide-react';
-import { formatNumber } from '../utils/formatters';
 
 export const Dashboard = () => {
   const [explainRec, setExplainRec] = useState(null);
@@ -364,160 +356,11 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
       </div>
 
       {/* Grid of 6 Status Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5">
-        {/* 1. Stadium Status */}
-        <Card hover className="flex flex-col justify-between p-4.5">
-          <div className="flex justify-between items-start mb-2.5">
-            <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Stadium Occupancy</span>
-            <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400">
-              <Users className="h-4.5 w-4.5" />
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl font-black tracking-tight text-slate-100 font-mono">
-              <span key={occupancyPercentage} className="animate-number-pulse">
-                {occupancyPercentage}
-              </span>%
-            </div>
-            <p className="text-[10px] text-slate-400 mt-1.5 truncate">
-              <span key={totalOccupancy} className="animate-number-pulse">
-                {formatNumber(totalOccupancy)}
-              </span> in attendance
-            </p>
-          </div>
-          <div className="w-full bg-slate-950 h-1.5 rounded-full mt-3 overflow-hidden border border-slate-900">
-            <div 
-              className="bg-blue-500 h-full rounded-full transition-all duration-500" 
-              style={{ width: `${occupancyPercentage}%` }}
-            ></div>
-          </div>
-        </Card>
-
-        {/* 2. Crowd Density */}
-        <Card hover className="flex flex-col justify-between p-4.5">
-          <div className="flex justify-between items-start mb-2.5">
-            <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Crowd Density</span>
-            <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-400">
-              <Flame className="h-4.5 w-4.5" />
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl font-black tracking-tight text-slate-100 uppercase flex items-baseline gap-1.5">
-              <span key={activeSnapshot.crowdDensityLevel} className="animate-number-pulse">
-                {activeSnapshot.crowdDensityLevel}
-              </span>
-            </div>
-            <p className="text-[10px] text-slate-400 mt-1.5 truncate">
-              Max wait: <span key={activeSnapshot.maxQueueTime} className="animate-number-pulse font-mono">{activeSnapshot.maxQueueTime}</span> mins
-            </p>
-          </div>
-          <div className="mt-3 flex items-center gap-1.5 text-[10px] font-semibold text-amber-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-            <span>{activeSnapshot.crowdDensityLevel === 'Critical' ? 'Immediate action required' : 'Monitored grid'}</span>
-          </div>
-        </Card>
-
-        {/* 3. Gate Status */}
-        <Card hover className="flex flex-col justify-between p-4.5">
-          <div className="flex justify-between items-start mb-2.5">
-            <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Gates Status</span>
-            <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400">
-              <LogOut className="h-4.5 w-4.5 rotate-180" />
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl font-black tracking-tight text-slate-100 font-mono">
-              <span key={activeSnapshot.gates.length} className="animate-number-pulse">
-                {activeSnapshot.gates.length}
-              </span> active
-            </div>
-            <p className="text-[10px] text-slate-400 mt-1.5 truncate">
-              Avg queue: <span key={activeSnapshot.averageQueueTime} className="animate-number-pulse">{activeSnapshot.averageQueueTime}</span> mins
-            </p>
-          </div>
-          <div className="mt-3">
-            <Badge variant={activeSnapshot.incidents.length > 0 ? 'danger' : 'success'} className="text-[9px] py-0">
-              {activeSnapshot.incidents.length > 0 ? `${activeSnapshot.incidents.length} Alert overrides` : 'All Gates Clear'}
-            </Badge>
-          </div>
-        </Card>
-
-        {/* 4. Parking Usage */}
-        <Card hover className="flex flex-col justify-between p-4.5">
-          <div className="flex justify-between items-start mb-2.5">
-            <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Parking Lots</span>
-            <div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-400">
-              <Car className="h-4.5 w-4.5" />
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl font-black tracking-tight text-slate-100 font-mono">
-              <span key={activeSnapshot.context.parkingOccupancy} className="animate-number-pulse">
-                {activeSnapshot.context.parkingOccupancy}
-              </span>%
-            </div>
-            <p className="text-[10px] text-slate-400 mt-1.5 truncate">
-              Lot A-D combined capacity
-            </p>
-          </div>
-          <div className="w-full bg-slate-950 h-1.5 rounded-full mt-3 overflow-hidden border border-slate-900">
-            <div 
-              className="bg-purple-500 h-full rounded-full transition-all duration-500" 
-              style={{ width: `${activeSnapshot.context.parkingOccupancy}%` }}
-            ></div>
-          </div>
-        </Card>
-
-        {/* 5. Weather */}
-        <Card hover className="flex flex-col justify-between p-4.5">
-          <div className="flex justify-between items-start mb-2.5">
-            <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Weather Telemetry</span>
-            <div className="p-1.5 rounded-lg bg-sky-500/10 text-sky-400">
-              <CloudSun className="h-4.5 w-4.5" />
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl font-black tracking-tight text-slate-100" key={activeSnapshot.context.weather}>
-              {activeSnapshot.context.weather}
-            </div>
-            <p className="text-[10px] text-slate-400 mt-1.5 truncate">
-              Rain impact: {activeSnapshot.context.weather === 'Heavy Rain' ? 'High delay risk' : 'Normal'}
-            </p>
-          </div>
-          <div className="mt-3 flex items-center gap-1.5 text-[10px] font-semibold text-emerald-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
-            <span>Sensor telemetry active</span>
-          </div>
-        </Card>
-
-        {/* 6. Operational Score */}
-        <Card hover className="flex flex-col justify-between p-4.5 border-blue-500/10">
-          <div className="flex justify-between items-start mb-2.5">
-            <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Operational Score</span>
-            <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400">
-              <Gauge className="h-4.5 w-4.5" />
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl font-black tracking-tight text-slate-100 font-mono flex items-center gap-1">
-              <span key={calculateOperationalScore(activeSnapshot)} className="animate-number-pulse">
-                {calculateOperationalScore(activeSnapshot)}
-              </span>
-              <span className="text-[10px] text-emerald-400 flex items-center font-bold">
-                <TrendingUp className="h-3 w-3 inline" /> +1.2%
-              </span>
-            </div>
-            <p className="text-[10px] text-slate-400 mt-1.5 truncate">
-              Overall flow index rating
-            </p>
-          </div>
-          <div className="mt-3">
-            <Badge variant={calculateOperationalScore(activeSnapshot) < 80 ? 'warning' : 'success'} className="text-[9px] py-0">
-              {calculateOperationalScore(activeSnapshot) < 80 ? 'Moderate Alert' : 'Optimal Grid'}
-            </Badge>
-          </div>
-        </Card>
-      </div>
+      <KPISection 
+        activeSnapshot={activeSnapshot} 
+        occupancyPercentage={occupancyPercentage} 
+        totalOccupancy={totalOccupancy} 
+      />
 
       {/* Grid of Two Analytics Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

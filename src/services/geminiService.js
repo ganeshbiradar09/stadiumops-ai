@@ -327,9 +327,6 @@ export const generateRecommendations = async (normalizedData, datasetName) => {
     return recommendationsWithMetadata;
 
   } catch (error) {
-    try {
-      require('fs').writeFileSync('error.log', (error.stack || error.message) + '\n' + JSON.stringify(error));
-    } catch(e) {}
     console.error("Gemini API call failed. Falling back to simulation logic: ", error);
     return runSimulationMode(normalizedData, datasetName);
   }
