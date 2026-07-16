@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
-import { Button } from '../components/common/Button';
 import { CrowdChart } from '../components/dashboard/CrowdChart';
 import { GateChart } from '../components/dashboard/GateChart';
 import { IntelSection } from '../components/dashboard/IntelSection';
@@ -10,12 +9,7 @@ import { isAiMode } from '../services/geminiService';
 import { recommendationEngine } from '../utils/recommendationEngine';
 import { parseAndValidateCSV } from '../services/csvParser';
 import { KPISection } from '../components/dashboard/kpi/KPISection';
-import {
-  BrainCircuit, 
-  HelpCircle,
-  Check, 
-  X
-} from 'lucide-react';
+import { RecommendationPanel } from '../components/dashboard/ai/RecommendationPanel';
 
 export const Dashboard = () => {
   const [explainRec, setExplainRec] = useState(null);
@@ -372,186 +366,16 @@ Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,Hi
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         
         {/* Dynamic AI Recommendation Engine */}
-        <Card 
-          title="GenAI Operational Decision Engine" 
-          subtitle="Autonomous reasoning and real-time decision support recommendations"
-          headerAction={
-            <div className="flex items-center gap-1">
-              <BrainCircuit className="h-4 w-4 text-blue-400" />
-              <span className="text-[9px] text-blue-400 font-bold uppercase tracking-wider">
-                {isAiMode ? 'Gemini 1.5 Live' : 'Simulation Engine Active'}
-              </span>
-            </div>
-          }
-        >
-          <div className="mt-4 space-y-4 max-h-[460px] overflow-y-auto pr-1">
-            {isAiProcessing ? (
-              <div 
-                className="h-[400px] flex flex-col items-center justify-center border border-slate-900 rounded-xl bg-slate-950/20 px-4"
-                role="status"
-                aria-live="polite"
-                aria-busy="true"
-              >
-                {/* Central spinner */}
-                <div className="relative mb-5 flex items-center justify-center">
-                  <div className="h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                </div>
-
-                {/* Processing messages */}
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 font-mono">
-                  Operational Engine Ingest
-                </h3>
-                <p className="text-xs text-blue-400 font-mono font-bold animate-pulse text-center mb-5">
-                  {loadingStage === 0 && "Connecting telemetry…"}
-                  {loadingStage === 1 && "Analyzing operational data…"}
-                  {loadingStage === 2 && "Generating AI recommendations…"}
-                </p>
-
-                {/* Progress bar */}
-                <div className="w-56 bg-slate-950 h-1 rounded-full overflow-hidden border border-slate-900 relative">
-                  <div 
-                    className="bg-blue-500 h-full rounded-full transition-all duration-300 ease-out"
-                    style={{
-                      width: `${
-                        loadingStage === 0 ? '30%' :
-                        loadingStage === 1 ? '65%' : '95%'
-                      }`
-                    }}
-                  ></div>
-                </div>
-
-                {/* Sleek inline system status log */}
-                <div className="mt-6 w-full max-w-xs bg-slate-950/60 border border-slate-900/60 rounded-lg p-2.5 font-mono text-[9px] text-slate-400 space-y-1 text-left h-20 overflow-y-auto">
-                  {loadingStage >= 0 && (
-                    <div className="text-blue-500/70">&gt; Connecting to perimeter devices...</div>
-                  )}
-                  {loadingStage >= 1 && (
-                    <div className="text-amber-500/70">&gt; Risk matrix validation active...</div>
-                  )}
-                  {loadingStage >= 2 && (
-                    <div className="text-emerald-500/70">&gt; Finalizing decision support lists...</div>
-                  )}
-                </div>
-              </div>
-            ) : recommendations.length === 0 ? (
-              <div className="h-36 flex flex-col items-center justify-center text-slate-400 text-xs font-semibold border border-slate-900 rounded-xl bg-slate-950/20">
-                <span>No recommendations computed.</span>
-                <span className="text-[10px] text-slate-400 mt-1">Please upload operational CSV or run synthetic models on the Data Sources hub.</span>
-              </div>
-            ) : (
-              recommendations.map((rec, index) => {
-                let priorityVariant = 'info';
-                if (rec.priority === 'Critical') priorityVariant = 'danger';
-                if (rec.priority === 'High') priorityVariant = 'warning';
-                
-                let statusColor = 'slate';
-                if (rec.status === 'Approved') statusColor = 'success';
-                if (rec.status === 'Rejected') statusColor = 'danger';
-
-                const isResolving = resolvingId === rec.id;
-                const isRejecting = rejectingId === rec.id;
-
-                return (
-                  <div 
-                    key={rec.id} 
-                    style={{ animationDelay: `${index * 80}ms` }}
-                    className={`
-                      p-4 rounded-xl border bg-slate-950/30 flex flex-col gap-3 transition-all hover:bg-slate-900/10
-                      ${rec.status === 'Approved' ? 'border-emerald-950/40 bg-emerald-950/5' : rec.status === 'Rejected' ? 'border-rose-950/30' : 'border-slate-800'}
-                      animate-card-fade-in opacity-0
-                      ${isResolving ? 'animate-resolve-fade-out' : ''}
-                      ${isRejecting ? 'animate-resolve-fade-out' : ''}
-                    `}
-                  >
-                    {/* Card Header */}
-                    <div className="flex justify-between items-center gap-2">
-                      <div className="flex items-center gap-2">
-                        <Badge variant={priorityVariant}>{rec.priority}</Badge>
-                        <span className="text-[10px] text-blue-400 font-mono font-extrabold">Conf: {rec.confidence}%</span>
-                      </div>
-                      <Badge variant={statusColor} className="text-[9px] px-1.5 py-0 uppercase">{rec.status}</Badge>
-                    </div>
-
-                    {/* Reasoning and Recommended Action */}
-                    <div className="space-y-1">
-                      <h4 className="text-xs font-black text-blue-400 uppercase tracking-wider">
-                        {rec.title}
-                      </h4>
-                      <p className="text-[11px] text-slate-300 font-medium leading-relaxed">
-                        {rec.description}
-                      </p>
-                    </div>
-
-                    <div>
-                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Action Directive:</span>
-                      <p className="text-xs text-slate-100 font-extrabold mt-1 leading-relaxed bg-slate-950/60 p-2.5 rounded-lg border border-slate-900">
-                        {rec.recommended_action}
-                      </p>
-                    </div>
-
-                    {/* Operational Variables grid */}
-                    <div className="grid grid-cols-2 gap-3 text-[10px] bg-slate-950/30 p-2.5 rounded-lg border border-slate-900/60">
-                      <div>
-                        <span className="text-slate-400 block">Queue Reduction</span>
-                        <span className="text-slate-200 font-bold font-mono">{rec.estimated_queue_reduction}</span>
-                      </div>
-                      <div>
-                        <span className="text-slate-400 block">Resolution ETA</span>
-                        <span className="text-slate-200 font-bold font-mono">{rec.estimated_resolution_time}</span>
-                      </div>
-                      <div>
-                        <span className="text-slate-400 block">Staff Needed</span>
-                        <span className="text-slate-200 font-bold font-mono">{rec.staff_required}</span>
-                      </div>
-                      <div>
-                        <span className="text-slate-400 block">Impact projection</span>
-                        <span className="text-slate-200 font-bold truncate block">{rec.expected_operational_impact}</span>
-                      </div>
-                    </div>
-
-                    {/* Action buttons */}
-                    <div className="flex gap-2 justify-end pt-1 border-t border-slate-900/60">
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="text-[10px] font-bold gap-1"
-                        onClick={() => setExplainRec(rec)}
-                        aria-label={`Explain decision details for recommendation: ${rec.title}`}
-                      >
-                        <HelpCircle className="h-3.5 w-3.5" />
-                        <span>Explain Decision</span>
-                      </Button>
-                      
-                      {rec.status === 'Pending' && (
-                        <>
-                          <Button 
-                            variant="secondary" 
-                            size="sm" 
-                            className="text-[10px] text-rose-400 border-rose-950/20 hover:bg-rose-500/10 px-2.5"
-                            onClick={() => handleReject(rec.id)}
-                            aria-label={`Reject recommendation: ${rec.title}`}
-                          >
-                            <X className="h-3.5 w-3.5" />
-                          </Button>
-                          <Button 
-                            variant="primary" 
-                            size="sm" 
-                            className="text-[10px] bg-blue-600 hover:bg-blue-500 text-slate-100 px-3.5"
-                            onClick={() => handleApprove(rec.id)}
-                            aria-label={`Approve recommendation: ${rec.title}`}
-                          >
-                            <Check className="h-3.5 w-3.5" />
-                            <span>Approve</span>
-                          </Button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </Card>
+        <RecommendationPanel 
+          isAiProcessing={isAiProcessing}
+          loadingStage={loadingStage}
+          recommendations={recommendations}
+          resolvingId={resolvingId}
+          rejectingId={rejectingId}
+          onExplain={setExplainRec}
+          onReject={handleReject}
+          onApprove={handleApprove}
+        />
 
         {/* Operational Decision Timeline */}
         <Card 
