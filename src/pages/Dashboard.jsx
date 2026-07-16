@@ -1,51 +1,29 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Badge } from '../components/common/Badge';
 import { TelemetryChartPanel } from '../components/dashboard/charts/TelemetryChartPanel';
 import { IntelSection } from '../components/dashboard/IntelSection';
 import { ExecutiveBriefingModal } from '../components/dashboard/ExecutiveBriefingModal';
 import { isAiMode } from '../services/geminiService'; 
 import { recommendationEngine } from '../utils/recommendationEngine';
-import { parseAndValidateCSV } from '../services/csvParser';
 import { KPISection } from '../components/dashboard/kpi/KPISection';
 import { RecommendationPanel } from '../components/dashboard/ai/RecommendationPanel';
 import { StatusTerminal } from '../components/dashboard/terminal/StatusTerminal';
+import { useTerminalLogger } from '../hooks/useTerminalLogger';
+import { useAiRecommendations } from '../hooks/useAiRecommendations';
+import { useTelemetry } from '../hooks/useTelemetry';
+import { useDemoScript } from '../hooks/useDemoScript';
 
 export const Dashboard = () => {
-  const [explainRec, setExplainRec] = useState(null);
-  const [demoRunning, setDemoRunning] = useState(false);
+  const { timelineEvents } = useTerminalLogger();
+  const { recommendations, resolvingId, rejectingId, explainRec, setExplainRec, handleApprove, handleReject } = useAiRecommendations();
+  const { activeSnapshot, datasetName, lastUpdateTime, occupancyPercentage, totalOccupancy } = useTelemetry();
   const [isAiProcessing, setIsAiProcessing] = useState(false);
   const [loadingStage, setLoadingStage] = useState(0);
   const [justFinishedProcessing, setJustFinishedProcessing] = useState(false);
-  const [lastUpdateTime, setLastUpdateTime] = useState(new Date().toLocaleTimeString('en-US', { hour12: false }));
-  const [resolvingId, setResolvingId] = useState(null);
-  const [rejectingId, setRejectingId] = useState(null);
-  const lastActiveElement = useRef(null);
-  
-  // Real-time telemetry bindings
-  const [activeSnapshot, setActiveSnapshot] = useState(recommendationEngine.getActiveSnapshot());
-  const [recommendations, setRecommendations] = useState(recommendationEngine.getActiveRecommendations());
-  const [timelineEvents, setTimelineEvents] = useState(recommendationEngine.getTimeline());
-  const datasetName = recommendationEngine.getActiveDatasetName();
-
-  // Calculate active layout metrics safely
-  const { occupancyPercentage, totalOccupancy } = React.useMemo(() => {
-    if (!activeSnapshot || !activeSnapshot.gates) return { occupancyPercentage: 0, totalOccupancy: 0 };
-    const cap = activeSnapshot.gates.reduce((sum, g) => sum + g.capacity, 0);
-    if (cap === 0) return { occupancyPercentage: 0, totalOccupancy: 0 };
-    const occ = Math.round(activeSnapshot.gates.reduce((sum, g) => sum + (g.capacity * (g.occupancy / 100)), 0));
-    return {
-      occupancyPercentage: Math.round((occ / cap) * 100),
-      totalOccupancy: occ
-    };
-  }, [activeSnapshot]);
+  const { runOneClickDemo, demoRunning } = useDemoScript(setIsAiProcessing);
 
   useEffect(() => {
     const handleUpdate = () => {
-      setActiveSnapshot(recommendationEngine.getActiveSnapshot());
-      setRecommendations(recommendationEngine.getActiveRecommendations());
-      setTimelineEvents(recommendationEngine.getTimeline());
-      setLastUpdateTime(new Date().toLocaleTimeString('en-US', { hour12: false }));
-
       const triggerLoading = localStorage.getItem('stadiumops_trigger_loading');
       if (triggerLoading === 'true') {
         localStorage.removeItem('stadiumops_trigger_loading');
@@ -92,24 +70,6 @@ export const Dashboard = () => {
     }
   }, [justFinishedProcessing]);
 
-  useEffect(() => {
-    if (explainRec) {
-      lastActiveElement.current = document.activeElement;
-      const handleKeyDown = (e) => {
-        if (e.key === 'Escape') {
-          setExplainRec(null);
-        }
-      };
-      window.addEventListener('keydown', handleKeyDown);
-      return () => {
-        window.removeEventListener('keydown', handleKeyDown);
-        if (lastActiveElement.current) {
-          lastActiveElement.current.focus();
-        }
-      };
-    }
-  }, [explainRec]);
-
   // Setup default fallback snapshot on initial boot if empty
   useEffect(() => {
     if (!activeSnapshot) {
@@ -125,121 +85,6 @@ export const Dashboard = () => {
     }
   }, [activeSnapshot]);
 
-  const handleApprove = async (id) => {
-    setResolvingId(id);
-    setTimeout(async () => {
-      await recommendationEngine.approveRecommendation(id);
-      setActiveSnapshot(recommendationEngine.getActiveSnapshot());
-      setRecommendations(recommendationEngine.getActiveRecommendations());
-      setTimelineEvents(recommendationEngine.getTimeline());
-      setResolvingId(null);
-    }, 250);
-  };
-
-  const handleReject = async (id) => {
-    setRejectingId(id);
-    setTimeout(async () => {
-      await recommendationEngine.rejectRecommendation(id);
-      setActiveSnapshot(recommendationEngine.getActiveSnapshot());
-      setRecommendations(recommendationEngine.getActiveRecommendations());
-      setTimelineEvents(recommendationEngine.getTimeline());
-      setRejectingId(null);
-    }, 250);
-  };
-
-  // Presentation Demo Script
-  const runOneClickDemo = async () => {
-    if (demoRunning) return;
-    setDemoRunning(true);
-    try {
-      alert("Demo Phase 1/5: Loading Peak Traffic Scenario...\nIngesting 17-dimensional synthetic CSV telemetry containing rainfall anomalies and turnstile validator failure logs.");
-      
-      const demoCSV = `Gate,Queue Length,Occupancy,Capacity,Staff,Weather,Incident,Parking,Transit Delay,Time,Risk Level,Emergency Status,Medical Cases,Security Alerts,VIP Traffic,Shuttle Status,Confidence
-Gate A (North),28,92%,15000,32,Heavy Rain,Wet plaza floor,88%,15,19:30,High,Normal,0,0,None,Optimal,90%
-Gate B (East),32,96%,20000,45,Heavy Rain,Outage turnstile lane 3,88%,15,19:30,Critical,Emergency,1,3,None,Optimal,95%
-Gate C (Southeast),8,48%,15000,35,Heavy Rain,None,88%,15,19:30,Medium,Normal,0,0,None,Optimal,85%
-Gate D (South),10,52%,15000,32,Heavy Rain,None,88%,15,19:30,Medium,Normal,0,0,None,Optimal,85%
-Gate E (West),12,56%,15000,32,Heavy Rain,None,88%,15,19:30,Medium,Normal,0,0,None,Optimal,85%
-Gate F (VIP/Skybox),2,15%,5000,18,Heavy Rain,None,88%,15,19:30,Low,Normal,0,0,High,Optimal,90%`;
-
-      const parsed = parseAndValidateCSV(demoCSV);
-      
-      // Ingest and trigger recalculation
-      const res = await recommendationEngine.processNewDataset(parsed.processedRows, "Interactive Presentation Demo Scenario");
-      
-      setIsAiProcessing(true); // Trigger 1.8s AI Processing Sequence
-
-      // Force immediate re-renders
-      setActiveSnapshot(res.snapshot);
-      setRecommendations(res.recommendations);
-      setTimelineEvents(recommendationEngine.getTimeline());
-
-      await new Promise(r => setTimeout(r, 4000));
-
-      // Step 2: Auto-approve Critical recommendation
-      const criticalRec = res.recommendations.find(r => r.priority === 'Critical');
-      if (criticalRec) {
-        alert(`Demo Phase 2/5: AI Decision Engine flagged anomalous queue sizes and turnstile outages at Gate B.\nAutomatically approving recommended action: "${criticalRec.title}"`);
-        
-        setResolvingId(criticalRec.id);
-        await new Promise(r => setTimeout(r, 250)); // Play exit animation in demo
-        await recommendationEngine.approveRecommendation(criticalRec.id);
-        setResolvingId(null);
-        
-        // Sync state
-        setActiveSnapshot(recommendationEngine.getActiveSnapshot());
-        setRecommendations(recommendationEngine.getActiveRecommendations());
-        setTimelineEvents(recommendationEngine.getTimeline());
-
-        await new Promise(r => setTimeout(r, 4000));
-      }
-
-      // Step 3: Run Outcome Simulation
-      alert("Demo Phase 3/5: Dynamic Outcome Simulation Engine active.\nNotice that turnstile queues are draining, medical cases have cleared, and the decision timeline logs have synced.");
-      setActiveSnapshot(recommendationEngine.getActiveSnapshot());
-      setRecommendations(recommendationEngine.getActiveRecommendations());
-      setTimelineEvents(recommendationEngine.getTimeline());
-
-      await new Promise(r => setTimeout(r, 3000));
-
-      // Step 4: Export report
-      alert("Demo Phase 4/5: Compiling AI Decision support logs and downloading CSV/Text reports...");
-      
-      let reportContent = "========================================================================\n";
-      reportContent += "FIFA WORLD CUP 2026 - DEMO OPERATIONAL OUTCOMES EXPORT\n";
-      reportContent += `Generated: ${new Date().toISOString()}\n`;
-      reportContent += "========================================================================\n\n";
-      
-      const currentSnapshot = recommendationEngine.getActiveSnapshot();
-      reportContent += "--- KPIs STATE AFTER OUTCOME SIMULATION ---\n";
-      reportContent += `Average wait time: ${currentSnapshot.averageQueueTime} mins\n`;
-      reportContent += `Max queue time: ${currentSnapshot.maxQueueTime} mins\n`;
-      reportContent += `Crowd density Level: ${currentSnapshot.crowdDensityLevel}\n\n`;
-
-      reportContent += "--- DECISION HISTORY LOGS ---\n";
-      recommendationEngine.getActiveRecommendations().forEach(rec => {
-        reportContent += `* [${rec.status}] ${rec.title}: ${rec.recommended_action} (Confidence: ${rec.confidence}%)\n`;
-      });
-
-      const blob = new Blob([reportContent], { type: 'text/plain' });
-      const element = document.createElement("a");
-      element.href = URL.createObjectURL(blob);
-      element.download = `DEMO_AI_Decision_Report.txt`;
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
-
-      await new Promise(r => setTimeout(r, 1000));
-
-      alert("Demo Phase 5/5: One-click presentation demonstration completed successfully!\nAll KPIs are restored within standard safety limits.");
-
-    } catch {
-      // Removed debug log
-      alert("Demo simulation error occurred.");
-    } finally {
-      setDemoRunning(false);
-    }
-  };
 
   if (!activeSnapshot) {
     return (

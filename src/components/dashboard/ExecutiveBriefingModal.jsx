@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { 
   BrainCircuit, 
   X,
@@ -11,6 +11,26 @@ import {
 import { Button } from '../common/Button';
 
 export const ExecutiveBriefingModal = ({ activeSnapshot, explainRec, onClose }) => {
+  const lastActiveElement = useRef(null);
+
+  useEffect(() => {
+    if (explainRec) {
+      lastActiveElement.current = document.activeElement;
+      const handleKeyDown = (e) => {
+        if (e.key === 'Escape') {
+          onClose();
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+        if (lastActiveElement.current) {
+          lastActiveElement.current.focus();
+        }
+      };
+    }
+  }, [explainRec, onClose]);
+
   if (!activeSnapshot || !explainRec) return null;
 
   // Compute triggering telemetry variables for the redesigned Explain Decision Executive Briefing
