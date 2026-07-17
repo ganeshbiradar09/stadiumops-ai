@@ -86,11 +86,11 @@ export const Reports = () => {
         recs.forEach((rec, idx) => {
           content += `[Recommendation #${idx + 1} - Priority: ${rec.priority} (ID: ${rec.id || rec.recommendation_id})]\n`;
           content += `Title: ${rec.title}\n`;
-          content += `Description: ${rec.description}\n`;
-          content += `Decision Confidence: ${rec.confidence}%\n`;
+          content += `Situation: ${rec.situation}\n`;
+          content += `Trend: ${rec.trend}\n`;
+          content += `Prediction: ${rec.prediction}\n`;
           content += `Recommended Action: ${rec.recommended_action}\n`;
-          content += `Reasoning: ${rec.reasoning}\n`;
-          content += `Expected Operational Impact: ${rec.expected_operational_impact}\n`;
+          content += `Expected Outcome: ${rec.expected_outcome || rec.expected_operational_impact}\n`;
           content += `Estimated Queue Reduction: ${rec.estimated_queue_reduction}\n`;
           content += `Resolution ETA: ${rec.estimated_resolution_time}\n`;
           content += `Staff Required: ${rec.staff_required}\n`;

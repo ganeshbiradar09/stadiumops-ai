@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">97.14% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>31/31</span>
+                <span class='fraction'>34/35</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">94.28% </span>
+                <span class="strong">83.33% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>33/35</span>
+                <span class='fraction'>40/48</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">90% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>9/9</span>
+                <span class='fraction'>9/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>27/27</span>
+                <span class='fraction'>31/31</span>
             </div>
         
             
@@ -194,7 +194,19 @@
 <a name='L129'></a><a href='#L129'>129</a>
 <a name='L130'></a><a href='#L130'>130</a>
 <a name='L131'></a><a href='#L131'>131</a>
-<a name='L132'></a><a href='#L132'>132</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a>
+<a name='L140'></a><a href='#L140'>140</a>
+<a name='L141'></a><a href='#L141'>141</a>
+<a name='L142'></a><a href='#L142'>142</a>
+<a name='L143'></a><a href='#L143'>143</a>
+<a name='L144'></a><a href='#L144'>144</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -231,7 +243,12 @@
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -275,6 +292,13 @@
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -336,7 +360,7 @@
  * @param {Array&lt;object&gt;} rows 
  * @returns {object} Normalized operational snapshot
  */
-export const normalizeStadiumData = (rows) =&gt; {
+export const normalizeStadiumData = (rows, prevSnapshot = null) =&gt; {
   if (!rows || rows.length === 0) {
     return {
       timestamp: new Date().toISOString(),
@@ -362,22 +386,27 @@ export const normalizeStadiumData = (rows) =&gt; {
   const latestRows = Array.from(uniqueGatesMap.values());
 &nbsp;
   // Find overall signals
-  const gates = latestRows.map(r =&gt; ({
-    gateId: r.gate.toLowerCase().replace(/[^a-z0-9]/g, '-'),
-    name: r.gate,
-    queueTime: r.queueLength, // minutes
-    occupancy: r.occupancy,   // percentage
-    capacity: r.capacity,
-    staff: r.staff,
-    // Extended properties
-    riskLevel: r.riskLevel || 'Low',
-    emergencyStatus: r.emergencyStatus || 'Normal',
-    medicalCases: r.medicalCases || 0,
-    securityAlerts: r.securityAlerts || 0,
-    vipTraffic: r.vipTraffic || 'None',
-    shuttleStatus: r.shuttleStatus || 'Optimal',
-    confidence: r.confidence
-  }));
+  const gates = latestRows.map(r =&gt; {
+    const prevGate = prevSnapshot?.gates?.<span class="fstat-no" title="function not covered" >find(g</span> =&gt; <span class="cstat-no" title="statement not covered" >g.name === r.gate)</span>;
+    return {
+      gateId: r.gate.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+      name: r.gate,
+      queueTime: r.queueLength, // minutes
+      queueTimeDelta: prevGate ? <span class="branch-0 cbranch-no" title="branch not covered" >r.queueLength - prevGate.queueTime : 0</span>,
+      occupancy: r.occupancy,   // percentage
+      occupancyDelta: prevGate ? <span class="branch-0 cbranch-no" title="branch not covered" >r.occupancy - prevGate.occupancy : 0</span>,
+      capacity: r.capacity,
+      staff: r.staff,
+      // Extended properties
+      riskLevel: r.riskLevel || 'Low',
+      emergencyStatus: r.emergencyStatus || 'Normal',
+      medicalCases: r.medicalCases || 0,
+      securityAlerts: r.securityAlerts || 0,
+      vipTraffic: r.vipTraffic || 'None',
+      shuttleStatus: r.shuttleStatus || 'Optimal',
+      confidence: r.confidence
+    };
+  });
 &nbsp;
   const totalQueue = gates.reduce((sum, g) =&gt; sum + g.queueTime, 0);
   const avgQueue = Math.round((totalQueue / gates.length) * 10) / 10;
@@ -405,18 +434,25 @@ export const normalizeStadiumData = (rows) =&gt; {
   // Context signals from the first row (common across the stadium snapshot)
   const firstRow = rows[0];
   
+  const parkingOccupancy = firstRow.parking || 0;
+  const transitDelay = firstRow.transitDelay || 0;
+&nbsp;
   return {
     timestamp: new Date().toISOString(),
     matchTime: firstRow.time || <span class="branch-1 cbranch-no" title="branch not covered" >"12:00",</span>
     averageQueueTime: avgQueue,
+    averageQueueTimeDelta: prevSnapshot ? <span class="branch-0 cbranch-no" title="branch not covered" >parseFloat((avgQueue - prevSnapshot.averageQueueTime).toFixed(1)) : 0</span>,
     maxQueueTime: maxQueue,
+    maxQueueTimeDelta: prevSnapshot ? (<span class="branch-0 cbranch-no" title="branch not covered" >maxQueue - prevSnapshot.maxQueueTime) : 0</span>,
     crowdDensityLevel,
     gates,
     incidents,
     context: {
       weather: firstRow.weather || <span class="branch-1 cbranch-no" title="branch not covered" >"Clear",</span>
-      parkingOccupancy: firstRow.parking || 0,
-      transitDelay: firstRow.transitDelay || 0
+      parkingOccupancy,
+      parkingOccupancyDelta: prevSnapshot ? <span class="branch-0 cbranch-no" title="branch not covered" >parkingOccupancy - prevSnapshot.context.parkingOccupancy : 0</span>,
+      transitDelay,
+      transitDelayDelta: prevSnapshot ? <span class="branch-0 cbranch-no" title="branch not covered" >transitDelay - prevSnapshot.context.transitDelay : 0</span>
     }
   };
 };
@@ -463,7 +499,7 @@ export default normalizeStadiumData;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-16T19:35:54.834Z
+                at 2026-07-16T20:19:31.474Z
             </div>
         <script src="../prettify.js"></script>
         <script>

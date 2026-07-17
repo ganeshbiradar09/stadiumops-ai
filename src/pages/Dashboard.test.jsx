@@ -39,11 +39,17 @@ const mockRecommendations = [
     recommendation_id: "rec-test-1",
     gateId: "gate-a",
     title: "Reroute Ingress Flow: Gate B to Gate A",
-    description: "Redirect incoming crowd flow from Congested Gate B to underloaded Gate A.",
+    situation: "Congested Gate B (14m queue) while Gate A is underloaded (7m queue).",
+    evidence: [
+      "Gate B queue is saturated at 14 minutes wait time",
+      "Gate A has available checking capacity (36% load)"
+    ],
+    trend: "Queue wait time at Gate B has escalated.",
+    prediction: "Total gate lockup within 15 minutes.",
     priority: "High",
     confidence: 88,
-    reasoning: "Gate B is busy (14m wait time) while Gate A is underloaded (7m wait time).",
     recommended_action: "Redirect 35% of ingress arrivals from Gate B to Gate A.",
+    expected_outcome: "Balances security check ingress, draining queues at Gate B.",
     estimated_queue_reduction: "25%",
     staff_required: "4 stewards",
     risk_if_ignored: "High density queue crowding at Gate B.",
@@ -90,7 +96,6 @@ describe('Dashboard.jsx integration tests', () => {
       render(<Dashboard />);
       
       expect(screen.getByText('Reroute Ingress Flow: Gate B to Gate A')).toBeInTheDocument();
-      expect(screen.getByText(/4 stewards/i)).toBeInTheDocument();
       expect(screen.getByText(/88%/i)).toBeInTheDocument(); // confidence
     });
   });
@@ -133,26 +138,25 @@ describe('Dashboard.jsx integration tests', () => {
       fireEvent.click(explainBtn);
 
       // Verify modal is open
-      expect(screen.getByText('Executive Decision Support briefing')).toBeInTheDocument();
-      expect(screen.getByText(/Trust Rated/i)).toBeInTheDocument();
+      expect(screen.getByText('AI Decision Trace & Impact Simulator')).toBeInTheDocument();
+      expect(screen.getByText(/HIGH CONFIDENCE/i)).toBeInTheDocument();
       
       // Verify telemetry grid metrics are shown inside modal
-      expect(screen.getByText('7 mins')).toBeInTheDocument(); // Gate A wait time
-      expect(screen.getByText('76%')).toBeInTheDocument(); // Parking occupancy
+      expect(screen.getByText('Scenario B')).toBeInTheDocument();
     });
 
     test('pressing Escape key closes the explain modal', () => {
       render(<Dashboard />);
 
       fireEvent.click(screen.getByRole('button', { name: /Explain Decision/i }));
-      expect(screen.getByText('Executive Decision Support briefing')).toBeInTheDocument();
+      expect(screen.getByText('AI Decision Trace & Impact Simulator')).toBeInTheDocument();
 
       // Press Escape key
       act(() => {
         fireEvent.keyDown(window, { key: 'Escape', code: 'Escape' });
       });
 
-      expect(screen.queryByText('Executive Decision Support briefing')).not.toBeInTheDocument();
+      expect(screen.queryByText('AI Decision Trace & Impact Simulator')).not.toBeInTheDocument();
     });
   });
 

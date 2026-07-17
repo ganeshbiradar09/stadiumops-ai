@@ -5,6 +5,7 @@ import { CrowdDensityCard } from './CrowdDensityCard';
 import { GatesStatusCard } from './GatesStatusCard';
 import { WeatherCard } from './WeatherCard';
 import { OperationalScoreCard } from './OperationalScoreCard';
+import { ParkingCard } from './ParkingCard';
 
 describe('KPI Section Components', () => {
   it('CrowdDensityCard renders critical state', () => {
@@ -45,5 +46,24 @@ describe('KPI Section Components', () => {
   it('OperationalScoreCard renders optimal grid', () => {
     render(<OperationalScoreCard score={95} />);
     expect(screen.getByText('Optimal Grid')).toBeInTheDocument();
+  });
+
+  it('ParkingCard renders without delta', () => {
+    render(<ParkingCard parkingOccupancy={85} />);
+    expect(screen.getByText('85')).toBeInTheDocument();
+  });
+
+  it('ParkingCard renders positive delta', () => {
+    const snapshot = { context: { parkingOccupancyDelta: 5 } };
+    render(<ParkingCard parkingOccupancy={90} activeSnapshot={snapshot} />);
+    expect(screen.getByText(/↑/)).toBeInTheDocument();
+    expect(screen.getByText(/5%/)).toBeInTheDocument();
+  });
+
+  it('ParkingCard renders negative delta', () => {
+    const snapshot = { context: { parkingOccupancyDelta: -2 } };
+    render(<ParkingCard parkingOccupancy={70} activeSnapshot={snapshot} />);
+    expect(screen.getByText(/↓/)).toBeInTheDocument();
+    expect(screen.getByText(/2%/)).toBeInTheDocument();
   });
 });

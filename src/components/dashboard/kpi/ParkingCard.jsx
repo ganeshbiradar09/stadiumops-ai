@@ -2,7 +2,7 @@ import React from 'react';
 import { Card } from '../../common/Card';
 import { Car } from 'lucide-react';
 
-export const ParkingCard = ({ parkingOccupancy }) => {
+export const ParkingCard = ({ parkingOccupancy, activeSnapshot }) => {
   return (
     <Card hover className="flex flex-col justify-between p-4.5">
       <div className="flex justify-between items-start mb-2.5">
@@ -17,9 +17,16 @@ export const ParkingCard = ({ parkingOccupancy }) => {
             {parkingOccupancy}
           </span>%
         </div>
-        <p className="text-[10px] text-slate-400 mt-1.5 truncate">
-          Lot A-D combined capacity
-        </p>
+        <div className="flex items-center gap-2 mt-1.5">
+          <p className="text-[10px] text-slate-400 truncate">
+            Lot A-D combined capacity
+          </p>
+          {activeSnapshot && activeSnapshot.context.parkingOccupancyDelta !== undefined && activeSnapshot.context.parkingOccupancyDelta !== 0 && (
+            <span className={`text-[9px] font-bold ${activeSnapshot.context.parkingOccupancyDelta > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>
+              {activeSnapshot.context.parkingOccupancyDelta > 0 ? '↑' : '↓'} {Math.abs(activeSnapshot.context.parkingOccupancyDelta)}%
+            </span>
+          )}
+        </div>
       </div>
       <div className="w-full bg-slate-950 h-1.5 rounded-full mt-3 overflow-hidden border border-slate-900">
         <div 

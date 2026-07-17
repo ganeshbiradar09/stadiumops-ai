@@ -3,7 +3,7 @@ import { Card } from '../../common/Card';
 import { Badge } from '../../common/Badge';
 import { LogOut } from 'lucide-react';
 
-export const GatesStatusCard = ({ activeGatesCount, averageQueueTime, incidentsCount }) => {
+export const GatesStatusCard = ({ activeGatesCount, averageQueueTime, incidentsCount, activeSnapshot }) => {
   return (
     <Card hover className="flex flex-col justify-between p-4.5">
       <div className="flex justify-between items-start mb-2.5">
@@ -18,9 +18,21 @@ export const GatesStatusCard = ({ activeGatesCount, averageQueueTime, incidentsC
             {activeGatesCount}
           </span> active
         </div>
-        <p className="text-[10px] text-slate-400 mt-1.5 truncate">
-          Avg queue: <span key={averageQueueTime} className="animate-number-pulse">{averageQueueTime}</span> mins
-        </p>
+        <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+          <p className="text-[10px] text-slate-400 truncate">
+            Avg queue: <span key={averageQueueTime} className="animate-number-pulse">{averageQueueTime}</span> mins
+          </p>
+          {activeSnapshot?.averageQueueTimeDelta !== undefined && activeSnapshot.averageQueueTimeDelta !== 0 && (
+            <span className={`text-[9px] font-bold ${activeSnapshot.averageQueueTimeDelta > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+              {activeSnapshot.averageQueueTimeDelta > 0 ? '↑' : '↓'} {Math.abs(activeSnapshot.averageQueueTimeDelta)}m
+            </span>
+          )}
+          {activeSnapshot?.predictedAverageQueueTime !== undefined && (
+            <span className="text-[9px] text-indigo-400 font-semibold px-1 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20">
+              Pred: {activeSnapshot.predictedAverageQueueTime}m
+            </span>
+          )}
+        </div>
       </div>
       <div className="mt-3">
         <Badge variant={incidentsCount > 0 ? 'danger' : 'success'} className="text-[9px] py-0">

@@ -379,17 +379,21 @@ exports[`Dashboard.jsx integration tests > accessibility and snapshot testing > 
               </span>
                active
             </div>
-            <p
-              class="text-[10px] text-slate-400 mt-1.5 truncate"
+            <div
+              class="flex items-center gap-2 mt-1.5 flex-wrap"
             >
-              Avg queue: 
-              <span
-                class="animate-number-pulse"
+              <p
+                class="text-[10px] text-slate-400 truncate"
               >
-                10.5
-              </span>
-               mins
-            </p>
+                Avg queue: 
+                <span
+                  class="animate-number-pulse"
+                >
+                  10.5
+                </span>
+                 mins
+              </p>
+            </div>
           </div>
           <div
             class="mt-3"
@@ -467,11 +471,15 @@ exports[`Dashboard.jsx integration tests > accessibility and snapshot testing > 
               </span>
               %
             </div>
-            <p
-              class="text-[10px] text-slate-400 mt-1.5 truncate"
+            <div
+              class="flex items-center gap-2 mt-1.5"
             >
-              Lot A-D combined capacity
-            </p>
+              <p
+                class="text-[10px] text-slate-400 truncate"
+              >
+                Lot A-D combined capacity
+              </p>
+            </div>
           </div>
           <div
             class="w-full bg-slate-950 h-1.5 rounded-full mt-3 overflow-hidden border border-slate-900"
@@ -795,104 +803,170 @@ exports[`Dashboard.jsx integration tests > accessibility and snapshot testing > 
               <div
                 class="flex justify-between items-center gap-2"
               >
-                <div
-                  class="flex items-center gap-2"
+                <span
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border transition-colors bg-amber-500/10 text-amber-400 border-amber-500/20 "
                 >
-                  <span
-                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border transition-colors bg-amber-500/10 text-amber-400 border-amber-500/20 "
-                  >
-                    High
-                  </span>
-                  <span
-                    class="text-[10px] text-blue-400 font-mono font-extrabold"
-                  >
-                    Conf: 
-                    88
-                    %
-                  </span>
-                </div>
+                  High
+                </span>
                 <span
                   class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border transition-colors bg-slate-500/10 text-slate-400 border-slate-500/20 text-[9px] px-1.5 py-0 uppercase"
                 >
                   Pending
                 </span>
               </div>
-              <div
-                class="space-y-1"
+              <h4
+                class="text-sm font-black text-blue-400 uppercase tracking-wider leading-tight"
               >
-                <h4
-                  class="text-xs font-black text-blue-400 uppercase tracking-wider"
+                Reroute Ingress Flow: Gate B to Gate A
+              </h4>
+              <div
+                class="flex items-center justify-between bg-slate-900/50 rounded-lg p-2 border border-slate-800/80"
+              >
+                <div>
+                  <span
+                    class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-0.5"
+                  >
+                    Decision Confidence
+                  </span>
+                  <span
+                    class="text-[10px] font-bold uppercase tracking-widest text-emerald-400"
+                  >
+                    HIGH CONFIDENCE
+                  </span>
+                </div>
+                <div
+                  class="font-mono text-base tracking-widest text-emerald-400"
                 >
-                  Reroute Ingress Flow: Gate B to Gate A
-                </h4>
-                <p
-                  class="text-[11px] text-slate-300 font-medium leading-relaxed"
-                >
-                  Redirect incoming crowd flow from Congested Gate B to underloaded Gate A.
-                </p>
+                  <span
+                    class="opacity-80 text-xs mr-2"
+                  >
+                    88
+                    %
+                  </span>
+                  █████████░
+                </div>
               </div>
-              <div>
-                <span
-                  class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block"
+              <div
+                class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-1"
+              >
+                <div
+                  class="p-2.5 bg-slate-950/40 rounded-lg border border-slate-800/60"
                 >
-                  Action Directive:
+                  <span
+                    class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5"
+                  >
+                    Evidence
+                  </span>
+                  <ul
+                    class="space-y-1"
+                  >
+                    <li
+                      class="flex items-start gap-1.5 text-[10px] text-slate-300 font-medium"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="lucide lucide-circle-check h-3 w-3 text-emerald-500/70 shrink-0 mt-0.5"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="10"
+                        />
+                        <path
+                          d="m9 12 2 2 4-4"
+                        />
+                      </svg>
+                      <span>
+                        Gate B queue is saturated at 14 minutes wait time
+                      </span>
+                    </li>
+                    <li
+                      class="flex items-start gap-1.5 text-[10px] text-slate-300 font-medium"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="lucide lucide-circle-check h-3 w-3 text-emerald-500/70 shrink-0 mt-0.5"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="10"
+                        />
+                        <path
+                          d="m9 12 2 2 4-4"
+                        />
+                      </svg>
+                      <span>
+                        Gate A has available checking capacity (36% load)
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+                <div
+                  class="p-2.5 bg-slate-950/40 rounded-lg border border-slate-800/60"
+                >
+                  <span
+                    class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5"
+                  >
+                    Assumptions
+                  </span>
+                  <ul
+                    class="space-y-1"
+                  >
+                    <li
+                      class="text-[10px] text-slate-500 italic"
+                    >
+                      Standard assumptions apply
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div
+                class="mt-1"
+              >
+                <span
+                  class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1"
+                >
+                  Recommended Action:
                 </span>
                 <p
-                  class="text-xs text-slate-100 font-extrabold mt-1 leading-relaxed bg-slate-950/60 p-2.5 rounded-lg border border-slate-900"
+                  class="text-xs text-slate-100 font-bold leading-relaxed bg-slate-950/60 p-3 rounded-lg border border-slate-900 shadow-inner"
                 >
                   Redirect 35% of ingress arrivals from Gate B to Gate A.
                 </p>
               </div>
               <div
-                class="grid grid-cols-2 gap-3 text-[10px] bg-slate-950/30 p-2.5 rounded-lg border border-slate-900/60"
+                class="bg-emerald-500/5 p-3 rounded-lg border border-emerald-500/10 mt-1"
               >
-                <div>
-                  <span
-                    class="text-slate-400 block"
-                  >
-                    Queue Reduction
-                  </span>
-                  <span
-                    class="text-slate-200 font-bold font-mono"
-                  >
-                    25%
-                  </span>
-                </div>
-                <div>
-                  <span
-                    class="text-slate-400 block"
-                  >
-                    Resolution ETA
-                  </span>
-                  <span
-                    class="text-slate-200 font-bold font-mono"
-                  />
-                </div>
-                <div>
-                  <span
-                    class="text-slate-400 block"
-                  >
-                    Staff Needed
-                  </span>
-                  <span
-                    class="text-slate-200 font-bold font-mono"
-                  >
-                    4 stewards
-                  </span>
-                </div>
-                <div>
-                  <span
-                    class="text-slate-400 block"
-                  >
-                    Impact projection
-                  </span>
-                  <span
-                    class="text-slate-200 font-bold truncate block"
-                  />
-                </div>
+                <span
+                  class="text-[10px] text-emerald-400/80 font-bold uppercase tracking-wider block mb-1"
+                >
+                  Expected Impact
+                </span>
+                <div
+                  class="text-sm font-black text-emerald-300"
+                />
               </div>
               <div
-                class="flex gap-2 justify-end pt-1 border-t border-slate-900/60"
+                class="flex gap-2 justify-end pt-2 mt-1 border-t border-slate-900/60"
               >
                 <button
                   aria-label="Explain decision details for recommendation: Reroute Ingress Flow: Gate B to Gate A"
@@ -930,7 +1004,7 @@ exports[`Dashboard.jsx integration tests > accessibility and snapshot testing > 
                 </button>
                 <button
                   aria-label="Reject recommendation: Reroute Ingress Flow: Gate B to Gate A"
-                  class="inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 active:bg-slate-900 text-slate-200 border border-slate-700/80 text-[10px] text-rose-400 border-rose-950/20 hover:bg-rose-500/10 px-2.5"
+                  class="inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 active:bg-slate-900 text-slate-200 border border-slate-700/80 text-[10px] text-rose-400 border-rose-950/20 hover:bg-rose-500/10 px-3"
                   type="button"
                 >
                   <svg
@@ -953,10 +1027,13 @@ exports[`Dashboard.jsx integration tests > accessibility and snapshot testing > 
                       d="m6 6 12 12"
                     />
                   </svg>
+                  <span>
+                    Reject
+                  </span>
                 </button>
                 <button
                   aria-label="Approve recommendation: Reroute Ingress Flow: Gate B to Gate A"
-                  class="inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed px-3 py-1.5 text-xs bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white shadow-md shadow-blue-900/10 hover:shadow-blue-500/25 text-[10px] bg-blue-600 hover:bg-blue-500 text-slate-100 px-3.5"
+                  class="inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed px-3 py-1.5 text-xs bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white shadow-md shadow-blue-900/10 hover:shadow-blue-500/25 text-[10px] bg-blue-600 hover:bg-blue-500 text-slate-100 px-4"
                   type="button"
                 >
                   <svg
@@ -977,7 +1054,7 @@ exports[`Dashboard.jsx integration tests > accessibility and snapshot testing > 
                     />
                   </svg>
                   <span>
-                    Approve
+                    Approve & Execute
                   </span>
                 </button>
               </div>
@@ -1032,6 +1109,58 @@ exports[`Dashboard.jsx integration tests > accessibility and snapshot testing > 
       >
         Mock Intel Section
       </div>
+    </div>
+    <div
+      class="fixed bottom-4 right-4 z-50 flex flex-col items-end"
+    >
+      <button
+        aria-label="Toggle Developer Diagnostics"
+        class="bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-400 hover:text-emerald-400 p-2 rounded-full shadow-lg transition-colors focus:outline-none focus:ring-2 focus:ring-slate-700 flex items-center justify-center gap-2"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-database h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <ellipse
+            cx="12"
+            cy="5"
+            rx="9"
+            ry="3"
+          />
+          <path
+            d="M3 5V19A9 3 0 0 0 21 19V5"
+          />
+          <path
+            d="M3 12A9 3 0 0 0 21 12"
+          />
+        </svg>
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-chevron-up h-3 w-3"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m18 15-6-6-6 6"
+          />
+        </svg>
+      </button>
     </div>
   </div>
 </div>

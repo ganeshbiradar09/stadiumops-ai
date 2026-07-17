@@ -1,6 +1,7 @@
 import { generateRecommendations } from '../services/geminiService';
 import { normalizeStadiumData } from './dataNormalizer';
 import { saveDataset, saveRecommendation, updateRecommendationStatus, saveAuditLog } from '../services/firebaseService';
+import { predictQueue } from './mathUtils';
 
 // Handle background loop ref
 let telemetryInterval = null;
@@ -11,8 +12,9 @@ export const recommendationEngine = {
    * Processes a newly parsed dataset (or synthetic dataset)
    */
   async processNewDataset(rows, datasetName) {
+    const prevSnapshot = this.getActiveSnapshot();
     // 1. Normalize
-    const snapshot = normalizeStadiumData(rows);
+    const snapshot = normalizeStadiumData(rows, prevSnapshot);
     localStorage.setItem('stadiumops_active_snapshot', JSON.stringify(snapshot));
     localStorage.setItem('stadiumops_active_dataset_name', datasetName);
 
@@ -25,10 +27,15 @@ export const recommendationEngine = {
       initialHistory.push({
         time: timeStr.slice(0, 5),
         crowdSize: snapshot.gates.reduce((sum, g) => sum + Math.round(g.capacity * (g.occupancy / 100)), 0),
-        flowRate: snapshot.gates.reduce((sum, g) => sum + g.queueTime * 5, 0)
+        flowRate: snapshot.gates.reduce((sum, g) => sum + g.queueTime * 5, 0),
+        averageQueueTime: snapshot.averageQueueTime // Approximate historical queue
       });
     }
     localStorage.setItem('stadiumops_chart_history', JSON.stringify(initialHistory));
+    
+    // Add prediction
+    const queueHistory = initialHistory.map(h => h.averageQueueTime);
+    snapshot.predictedAverageQueueTime = predictQueue(queueHistory, 5);
 
     // Clear old active approved effects on new dataset ingestion
     approvedEffects = [];
@@ -171,7 +178,17 @@ export const recommendationEngine = {
             queue = Math.max(4, queue - 8);
           }
         }
-        return { ...gate, queueTime: queue, occupancy: occ, staff, securityAlerts: sec, medicalCases: med, emergencyStatus: em };
+        return { 
+          ...gate, 
+          queueTime: queue, 
+          queueTimeDelta: queue - gate.queueTime,
+          occupancy: occ, 
+          occupancyDelta: occ - gate.occupancy,
+          staff, 
+          securityAlerts: sec, 
+          medicalCases: med, 
+          emergencyStatus: em 
+        };
       });
 
       let transitDelay = snapshot.context.transitDelay;
@@ -192,11 +209,14 @@ export const recommendationEngine = {
         ...snapshot,
         gates: updatedGates,
         averageQueueTime: avgQueue,
+        averageQueueTimeDelta: parseFloat((avgQueue - snapshot.averageQueueTime).toFixed(1)),
         maxQueueTime: maxQueue,
+        maxQueueTimeDelta: maxQueue - snapshot.maxQueueTime,
         incidents,
         context: {
           ...snapshot.context,
-          transitDelay
+          transitDelay,
+          transitDelayDelta: transitDelay - snapshot.context.transitDelay
         }
       };
 
@@ -266,6 +286,7 @@ export const recommendationEngine = {
     }
 
     telemetryInterval = setInterval(async () => {
+      const t0 = performance.now();
       const snapshot = this.getActiveSnapshot();
       if (!snapshot) {
         clearInterval(telemetryInterval);
@@ -289,7 +310,9 @@ export const recommendationEngine = {
         return {
           ...gate,
           queueTime: newQueue,
+          queueTimeDelta: newQueue - gate.queueTime,
           occupancy: newOcc,
+          occupancyDelta: newOcc - gate.occupancy,
           staff: newStaff
         };
       });
@@ -353,23 +376,7 @@ export const recommendationEngine = {
       else if (avgOcc >= 60) crowdDensityLevel = "High";
       else if (avgOcc >= 35) crowdDensityLevel = "Moderate";
 
-      const updatedSnapshot = {
-        ...snapshot,
-        gates: updatedGates,
-        averageQueueTime: avgQueue,
-        maxQueueTime: maxQueue,
-        crowdDensityLevel,
-        incidents: incidentsList,
-        context: {
-          ...snapshot.context,
-          parkingOccupancy: newParking,
-          transitDelay: newTransitDelay
-        }
-      };
-
-      localStorage.setItem('stadiumops_active_snapshot', JSON.stringify(updatedSnapshot));
-
-      // Append point to sliding chart history (rolling 30 points)
+      let predictedAverageQueueTime = avgQueue;
       const historyRaw = localStorage.getItem('stadiumops_chart_history');
       if (historyRaw) {
         const history = JSON.parse(historyRaw);
@@ -379,14 +386,39 @@ export const recommendationEngine = {
         history.push({
           time: timeStr.slice(0, 5),
           crowdSize: totalOcc,
-          flowRate: Math.round(updatedGates.reduce((sum, g) => sum + g.queueTime * 5, 0))
+          flowRate: Math.round(updatedGates.reduce((sum, g) => sum + g.queueTime * 5, 0)),
+          averageQueueTime: avgQueue
         });
         
         while (history.length > 30) {
           history.shift(); // Keep rolling last 30 points
         }
         localStorage.setItem('stadiumops_chart_history', JSON.stringify(history));
+        
+        const queueHistory = history.map(h => h.averageQueueTime);
+        predictedAverageQueueTime = predictQueue(queueHistory, 5); // Predict 5 steps ahead
       }
+
+      const updatedSnapshot = {
+        ...snapshot,
+        gates: updatedGates,
+        averageQueueTime: avgQueue,
+        averageQueueTimeDelta: parseFloat((avgQueue - snapshot.averageQueueTime).toFixed(1)),
+        predictedAverageQueueTime,
+        maxQueueTime: maxQueue,
+        maxQueueTimeDelta: maxQueue - snapshot.maxQueueTime,
+        crowdDensityLevel,
+        incidents: incidentsList,
+        context: {
+          ...snapshot.context,
+          parkingOccupancy: newParking,
+          parkingOccupancyDelta: newParking - snapshot.context.parkingOccupancy,
+          transitDelay: newTransitDelay,
+          transitDelayDelta: newTransitDelay - snapshot.context.transitDelay
+        }
+      };
+
+      localStorage.setItem('stadiumops_active_snapshot', JSON.stringify(updatedSnapshot));
 
       // Refresh recommendations based on the new telemetry snapshot
       const datasetName = localStorage.getItem('stadiumops_active_dataset_name') || "Live Ingest";
@@ -410,6 +442,20 @@ export const recommendationEngine = {
       window.dispatchEvent(new CustomEvent('stadiumops-telemetry-update', {
         detail: { snapshot: updatedSnapshot }
       }));
+
+      // Update diagnostics for telemetry latency
+      const t1 = performance.now();
+      const diagnosticsRaw = localStorage.getItem('stadiumops_diagnostics');
+      const diagnostics = diagnosticsRaw ? JSON.parse(diagnosticsRaw) : {};
+      diagnostics.telemetryProcessingTime = t1 - t0;
+      
+      // Also calculate prediction confidence (max of active pending recommendations)
+      const pendingRecs = recsWithStatus.filter(r => r.status === 'Pending');
+      if (pendingRecs.length > 0) {
+        diagnostics.predictionConfidence = Math.max(...pendingRecs.map(r => r.confidence || 0));
+      }
+      localStorage.setItem('stadiumops_diagnostics', JSON.stringify(diagnostics));
+      window.dispatchEvent(new CustomEvent('stadiumops-diagnostics-update', { detail: diagnostics }));
 
     }, process.env.NODE_ENV === 'test' ? 10 : 8000);
   },

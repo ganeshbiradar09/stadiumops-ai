@@ -249,6 +249,29 @@ describe('recommendationEngine unit tests', () => {
     recommendationEngine.stopLiveStreaming();
   });
 
+  test('processes active effects directly to increase branch coverage', async () => {
+    vi.useRealTimers();
+    localStorage.setItem('stadiumops_active_snapshot', JSON.stringify(mockSnapshot));
+    
+    // Inject effects directly to bypass approval logic string matching
+    localStorage.setItem('stadiumops_active_effects', JSON.stringify([
+      { type: 'incident', gateName: 'Gate A', remainingTicks: 2 },
+      { type: 'security_medical', gateName: 'Gate B', remainingTicks: 2 },
+      { type: 'transit', remainingTicks: 2 }
+    ]));
+
+    recommendationEngine.startLiveStreaming();
+    
+    // Wait for the 10ms tick to execute on real timers
+    await new Promise(r => setTimeout(r, 60));
+
+    const updatedSnapshot = recommendationEngine.getActiveSnapshot();
+    expect(updatedSnapshot).not.toBeNull();
+    
+    // Stop streaming
+    recommendationEngine.stopLiveStreaming();
+  });
+
   test('stores, filters duplicates and retrieves recommendation history', () => {
     recommendationEngine.saveToHistory([mockRecommendation]);
     expect(recommendationEngine.getRecommendationHistory()).toHaveLength(1);

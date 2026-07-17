@@ -7,7 +7,7 @@ import { WeatherCard } from './WeatherCard';
 import { OperationalScoreCard } from './OperationalScoreCard';
 import { calculateOperationalScore } from '../../../utils/mathUtils';
 
-export const KPISection = ({ activeSnapshot, occupancyPercentage, totalOccupancy }) => {
+export const KPISection = React.memo(({ activeSnapshot, occupancyPercentage, totalOccupancy }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5">
       <VisitorCard 
@@ -22,9 +22,11 @@ export const KPISection = ({ activeSnapshot, occupancyPercentage, totalOccupancy
         activeGatesCount={activeSnapshot.gates.length} 
         averageQueueTime={activeSnapshot.averageQueueTime} 
         incidentsCount={activeSnapshot.incidents.length} 
+        activeSnapshot={activeSnapshot}
       />
       <ParkingCard 
         parkingOccupancy={activeSnapshot.context.parkingOccupancy} 
+        activeSnapshot={activeSnapshot}
       />
       <WeatherCard 
         weather={activeSnapshot.context.weather} 
@@ -34,4 +36,6 @@ export const KPISection = ({ activeSnapshot, occupancyPercentage, totalOccupancy
       />
     </div>
   );
-};
+});
+
+KPISection.displayName = 'KPISection';

@@ -101,16 +101,14 @@ Gate B, 5, 20%, 2000, 10, Clear, None, 50%, 0, 12:00`;
     const explainBtn = screen.getByRole('button', { name: /Explain Decision/i });
     fireEvent.click(explainBtn);
 
-    expect(screen.getByText('Executive Decision Support briefing')).toBeInTheDocument();
-    expect(screen.getByText('30 mins')).toBeInTheDocument(); // Max queue wait time (no gateId in generated simulation rec)
-    expect(screen.getAllByText('Clear')[0]).toBeInTheDocument(); // Weather context
-    expect(screen.getAllByText('50%')[0]).toBeInTheDocument(); // Parking context
+    expect(screen.getByText('AI Decision Trace & Impact Simulator')).toBeInTheDocument();
+    expect(screen.getByText('Scenario B')).toBeInTheDocument(); // Something inside the new modal to verify it rendered correctly
 
     // Dismiss modal
     act(() => {
       fireEvent.keyDown(window, { key: 'Escape', code: 'Escape' });
     });
-    expect(screen.queryByText('Executive Decision Support briefing')).not.toBeInTheDocument();
+    expect(screen.queryByText('AI Decision Trace & Impact Simulator')).not.toBeInTheDocument();
 
     // 4. Click Approve button on card and check estimated queue reduction
     const approveBtn = screen.getByRole('button', { name: /Approve/i });

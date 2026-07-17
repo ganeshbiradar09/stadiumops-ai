@@ -16,21 +16,21 @@ export const useAiRecommendations = () => {
     return () => window.removeEventListener('stadiumops-telemetry-update', syncRecommendations);
   }, [syncRecommendations]);
 
-  const handleApprove = async (id) => {
+  const handleApprove = useCallback(async (id) => {
     setResolvingId(id);
     setTimeout(async () => {
       await recommendationEngine.approveRecommendation(id);
       setResolvingId(null);
     }, 250);
-  };
+  }, []);
 
-  const handleReject = async (id) => {
+  const handleReject = useCallback(async (id) => {
     setRejectingId(id);
     setTimeout(async () => {
       await recommendationEngine.rejectRecommendation(id);
       setRejectingId(null);
     }, 250);
-  };
+  }, []);
 
   return {
     recommendations,

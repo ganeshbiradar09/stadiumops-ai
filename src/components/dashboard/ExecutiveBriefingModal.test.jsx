@@ -31,15 +31,18 @@ describe('ExecutiveBriefingModal', () => {
     risk_if_ignored: 'Very high'
   };
 
-  test('renders with critical severity and incidents', () => {
+  test('renders AI Decision Trace & Impact Simulator UI with Scenario A and B', () => {
     render(<ExecutiveBriefingModal activeSnapshot={mockSnapshot} explainRec={mockExplainRec} onClose={() => {}} />);
-    expect(screen.getByText('Validator outage')).toBeInTheDocument();
-    expect(screen.getByText('Heavy Rain')).toBeInTheDocument();
+    expect(screen.getByText('AI Decision Trace & Impact Simulator')).toBeInTheDocument();
+    expect(screen.getByText('Scenario A')).toBeInTheDocument();
+    expect(screen.getByText('Scenario B')).toBeInTheDocument();
+    expect(screen.getByText('Reroute to Gate A')).toBeInTheDocument();
   });
   
-  test('renders with no target gate', () => {
+  test('renders metadata from explainRec correctly', () => {
     const noGateRec = { ...mockExplainRec, title: 'Unknown', description: 'Unknown' };
     render(<ExecutiveBriefingModal activeSnapshot={mockSnapshot} explainRec={noGateRec} onClose={() => {}} />);
-    expect(screen.getByText('Validator outage, Minor issue')).toBeInTheDocument();
+    expect(screen.getByText(/Gemini/)).toBeInTheDocument();
+    expect(screen.getByText(/1.0/)).toBeInTheDocument();
   });
 });

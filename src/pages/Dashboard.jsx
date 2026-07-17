@@ -12,6 +12,7 @@ import { useTerminalLogger } from '../hooks/useTerminalLogger';
 import { useAiRecommendations } from '../hooks/useAiRecommendations';
 import { useTelemetry } from '../hooks/useTelemetry';
 import { useDemoScript } from '../hooks/useDemoScript';
+import { DiagnosticsPanel } from '../components/dashboard/diagnostics/DiagnosticsPanel';
 
 export const Dashboard = () => {
   const { timelineEvents } = useTerminalLogger();
@@ -229,10 +230,11 @@ export const Dashboard = () => {
         onClose={() => setExplainRec(null)} 
       />
 
-      {/* Grid of Event Streams */}
       <div className="grid grid-cols-1 gap-6">
         <IntelSection />
       </div>
+
+      <DiagnosticsPanel />
     </div>
   );
 };

@@ -39,3 +39,35 @@ export const calculateOperationalScore = (snapshot) => {
 
   return Math.max(0, Math.round(score));
 };
+
+/**
+ * Basic Linear Regression for Predictive Forecasting.
+ * Predicts future queue length based on a rolling history window.
+ * @param {Array<number>} history - Array of recent queue wait times (e.g., last 5 snapshots)
+ * @param {number} futureSteps - Number of intervals ahead to predict
+ * @returns {number} Predicted queue wait time
+ */
+export const predictQueue = (history, futureSteps = 1) => {
+  if (!history || history.length < 2) return history?.[history.length - 1] || 0;
+
+  const n = history.length;
+  let sumX = 0;
+  let sumY = 0;
+  let sumXY = 0;
+  let sumXX = 0;
+
+  for (let i = 0; i < n; i++) {
+    sumX += i;
+    sumY += history[i];
+    sumXY += i * history[i];
+    sumXX += i * i;
+  }
+
+  const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+  const intercept = (sumY - slope * sumX) / n;
+
+  const predicted = slope * (n - 1 + futureSteps) + intercept;
+  
+  // Floor at 0
+  return Math.max(0, Math.round(predicted * 10) / 10);
+};

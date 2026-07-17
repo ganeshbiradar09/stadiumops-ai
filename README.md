@@ -25,9 +25,12 @@ StadiumOps AI is an AI-assisted operational decision-support platform designed f
 - [Local Installation & How to Run](#9-local-installation--how-to-run)
 - [Environment Variables](#10-environment-variables)
 - [Quick Demo Walkthrough](#11-quick-demo-walkthrough)
-- [Tested & Supported Browsers](#12-tested--supported-browsers)
-- [Acknowledgements](#13-acknowledgements)
-- [License](#14-license)
+- [Developer Observability](#12-developer-observability)
+- [Documentation & Assets](#13-documentation--assets)
+- [Tested & Supported Browsers](#14-tested--supported-browsers)
+- [Hackathon Constraints & Architecture Limitations](#15-hackathon-constraints--architecture-limitations)
+- [Acknowledgements](#16-acknowledgements)
+- [License](#17-license)
 
 ---
 
@@ -65,6 +68,7 @@ StadiumOps AI is designed as an AI-assisted operational command center for large
 ✔ **Closed-Loop Outcome Simulation**: Drains wait times, clears incidents, and re-allocates staff dynamically on approval.
 ✔ **High-Reliability CSV Validation**: Captures, lists, and displays validation warning logs before ingestion.
 ✔ **Firebase + Offline Fallback**: Real-time syncing with automatic failover to local storage.
+✔ **Developer Observability**: Floating diagnostics drawer tracking live AI latency, event loops, and engine health.
 ✔ **Report Export**: Compiles KPIs, recommendations, and audit logs into flat text reports.
 ✔ **One-Click Presentation Demo**: Complete automated presentation run for quick judging evaluations.
 ✔ **WCAG 2.1 AA Accessibility**: Full keyboard navigation, proper ARIA labeling, semantic structures, and high contrast.
@@ -114,27 +118,25 @@ StadiumOps AI is designed as an AI-assisted operational command center for large
 
 The application decouples parsing, state coordinating, and cognitive reasoning into distinct layers:
 
-```
-CSV / Synthetic Scenario
-        │
-        ▼
- CSV Validation
-        │
-        ▼
- Data Normalization
-        │
-        ▼
- Recommendation Engine
-        │
-   ┌────┴────┐
-   ▼         ▼
- Gemini   Simulation
-        │
-        ▼
- React Dashboard
-        │
-        ▼
- Reports & Audit Logs
+```mermaid
+flowchart TD
+    A[CSV / Synthetic Scenario] --> B(CSV Validation)
+    B --> C(Data Normalization)
+    C --> D{Recommendation Engine}
+    D --> E[Gemini API]
+    D --> F[Simulation Fallback]
+    E --> G[React Dashboard]
+    F --> G
+    G --> H(Reports & Audit Logs)
+    
+    style A fill:#1e293b,stroke:#334155,color:#f1f5f9
+    style B fill:#0f172a,stroke:#3b82f6,color:#bfdbfe
+    style C fill:#0f172a,stroke:#3b82f6,color:#bfdbfe
+    style D fill:#1e1b4b,stroke:#6366f1,color:#c7d2fe
+    style E fill:#422006,stroke:#f59e0b,color:#fef3c7
+    style F fill:#064e3b,stroke:#10b981,color:#d1fae5
+    style G fill:#020617,stroke:#0ea5e9,color:#bae6fd
+    style H fill:#1e293b,stroke:#334155,color:#f1f5f9
 ```
 
 - **Frontend Core**: React (v19) + Vite (v8) + Tailwind CSS (v4) with native `@tailwindcss/vite` integration.
@@ -215,7 +217,25 @@ Walk through the primary operational flow of the command deck:
 
 ---
 
-## 12. Tested & Supported Browsers
+## 12. Developer Observability
+
+A dedicated **Diagnostics Drawer** is accessible via the database icon in the bottom right corner of the application. 
+This panel provides real-time, non-invasive telemetry on the health of the decision engine, including:
+- **AI Pipeline:** Model tracking, prompt versioning, parsing status, and latency.
+- **Telemetry Engine:** Event loop processing times and buffer tracking.
+- **System:** Live theme states and fallback mode visibility.
+
+---
+
+## 13. Documentation & Assets
+
+For a deeper dive into the system engineering and presentation flows, refer to:
+- **[System Architecture](architecture.md):** Detailed breakdown of component hierarchies, telemetry data pipelines, and AI reasoning flows.
+- **[Executive Demo Script](demo_script.md):** A structured 2-3 minute presentation guide designed for hackathon judging.
+
+---
+
+## 14. Tested & Supported Browsers
 
 - Chrome (v110 or higher)
 - Edge (v110 or higher)
@@ -224,7 +244,13 @@ Walk through the primary operational flow of the command deck:
 
 ---
 
-## 13. Acknowledgements
+## 15. Hackathon Constraints & Architecture Limitations
+
+**Client-Side API Key Exposure:** Due to hackathon deployment simplicity constraints, `VITE_GEMINI_API_KEY` is currently accessed directly from the client. In a production deployment, this would be replaced with a serverless backend proxy to prevent client exposure. This is a deliberate deployment constraint, not the intended architecture.
+
+---
+
+## 16. Acknowledgements
 
 - **Google Gemini**: Dynamic operational reasoning models
 - **React**: Frontend application architecture
@@ -235,7 +261,7 @@ Walk through the primary operational flow of the command deck:
 
 ---
 
-## 14. License
+## 17. License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 *(Created for PromptWars 2026 Evaluation purposes only).*

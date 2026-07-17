@@ -80,7 +80,7 @@ export const IntelSection = React.memo(() => {
             <div 
               key={evt.id} 
               className={`
-                p-3.5 rounded-xl border bg-slate-950/40 flex gap-3 items-start transition-all hover:bg-slate-900/30
+                p-3.5 rounded-xl border bg-slate-950/40 flex gap-3 items-start transition-all hover:bg-slate-900/30 animate-card-fade-in
                 ${evt.type === 'danger' ? 'border-rose-950/30 hover:border-rose-950/50' : 'border-slate-800/80 hover:border-slate-700/50'}
               `}
             >
@@ -109,6 +109,11 @@ export const IntelSection = React.memo(() => {
             </div>
           );
         })}
+        {filteredEvents.length === 0 && (
+          <div className="h-32 flex flex-col items-center justify-center text-slate-400 text-xs font-semibold animate-fade-in">
+            <span className="text-slate-500">No events found for filter: {filter}</span>
+          </div>
+        )}
       </div>
     </Card>
   );

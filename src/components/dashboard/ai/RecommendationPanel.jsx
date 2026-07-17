@@ -4,7 +4,7 @@ import { BrainCircuit } from 'lucide-react';
 import { isAiMode } from '../../../services/geminiService';
 import { RecommendationCard } from './RecommendationCard';
 
-export const RecommendationPanel = ({
+export const RecommendationPanel = React.memo(({
   isAiProcessing,
   loadingStage,
   recommendations,
@@ -64,22 +64,25 @@ export const RecommendationPanel = ({
             </div>
 
             {/* Sleek inline system status log */}
-            <div className="mt-6 w-full max-w-xs bg-slate-950/60 border border-slate-900/60 rounded-lg p-2.5 font-mono text-[9px] text-slate-400 space-y-1 text-left h-20 overflow-y-auto">
+            <div className="mt-6 w-full max-w-xs bg-slate-950/60 border border-slate-900/60 rounded-lg p-2.5 font-mono text-[9px] text-slate-400 space-y-1.5 text-left h-24 overflow-y-auto">
               {loadingStage >= 0 && (
-                <div className="text-blue-500/70">&gt; Connecting to perimeter devices...</div>
+                <div className="text-blue-500/70 animate-fade-in">&gt; Connecting to perimeter devices... [OK]</div>
               )}
               {loadingStage >= 1 && (
-                <div className="text-amber-500/70">&gt; Risk matrix validation active...</div>
+                <div className="text-amber-500/70 animate-fade-in">&gt; Risk matrix validation active... [COMPUTING]</div>
               )}
               {loadingStage >= 2 && (
-                <div className="text-emerald-500/70">&gt; Finalizing decision support lists...</div>
+                <div className="text-emerald-500/70 animate-fade-in">&gt; Finalizing decision support lists... [READY]</div>
               )}
             </div>
           </div>
         ) : recommendations.length === 0 ? (
-          <div className="h-36 flex flex-col items-center justify-center text-slate-400 text-xs font-semibold border border-slate-900 rounded-xl bg-slate-950/20">
-            <span>No recommendations computed.</span>
-            <span className="text-[10px] text-slate-400 mt-1">Please upload operational CSV or run synthetic models on the Data Sources hub.</span>
+          <div className="h-64 flex flex-col items-center justify-center text-slate-400 text-xs font-semibold border border-slate-900 rounded-xl bg-slate-950/20 animate-fade-in">
+            <BrainCircuit className="h-10 w-10 text-slate-700 mb-3" />
+            <span className="text-slate-300">No active operational insights.</span>
+            <span className="text-[10px] text-slate-500 mt-1 max-w-xs text-center leading-relaxed">
+              Operational engine is monitoring telemetry. Upload a new CSV dataset or run the demo presentation to trigger analysis.
+            </span>
           </div>
         ) : (
           recommendations.map((rec, index) => (
@@ -98,4 +101,6 @@ export const RecommendationPanel = ({
       </div>
     </Card>
   );
-};
+});
+
+RecommendationPanel.displayName = 'RecommendationPanel';

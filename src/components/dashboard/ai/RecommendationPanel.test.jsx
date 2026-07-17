@@ -32,7 +32,7 @@ describe('RecommendationPanel Components', () => {
 
   it('renders empty state when no recommendations exist', () => {
     render(<RecommendationPanel isAiProcessing={false} recommendations={[]} />);
-    expect(screen.getByText('No recommendations computed.')).toBeInTheDocument();
+    expect(screen.getByText('No active operational insights.')).toBeInTheDocument();
   });
 
   it('renders recommendations list', () => {
@@ -63,7 +63,7 @@ describe('RecommendationCard Component', () => {
     fireEvent.click(screen.getByText('Explain Decision'));
     expect(onExplain).toHaveBeenCalledWith(mockRecommendation);
 
-    fireEvent.click(screen.getByText('Approve'));
+    fireEvent.click(screen.getByText('Approve & Execute'));
     expect(onApprove).toHaveBeenCalledWith('rec-1');
     
     // The reject button is the X icon, which has aria-label="Reject recommendation: Test Recommendation"
