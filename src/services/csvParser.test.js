@@ -11,6 +11,10 @@ describe('csvParser.js unit tests', () => {
 
     const resultBlank = parseAndValidateCSV('   ');
     expect(resultBlank.success).toBe(false);
+    
+    const resultEmptyFirstLine = parseAndValidateCSV('\nGate A, 10, 30%, 1000, 5, Clear, None, 50%, 0, 12:00');
+    expect(resultEmptyFirstLine.success).toBe(false);
+    expect(resultEmptyFirstLine.summary.rejected).toBe(1);
   });
 
   test('rejects CSV with missing required Gate header', () => {
@@ -94,6 +98,10 @@ describe('csvParser.js unit tests', () => {
 
       const resultBadCap = parseAndValidateCSV(validHeader + rowBadCap);
       expect(resultBadCap.rejectedRows[0].reason).toContain('Invalid Capacity');
+
+      const rowMissingGate = ', 10, 30%, 1000, 5, Clear, None, 50%, 0, 12:00\n';
+      const resultMissingGate = parseAndValidateCSV(validHeader + rowMissingGate);
+      expect(resultMissingGate.rejectedRows[0].reason).toContain('Missing Gate ID');
     });
 
     test('validates time formats (HH:MM or HH:MM:SS)', () => {

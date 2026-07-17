@@ -74,4 +74,20 @@ describe('useDemoScript hook', () => {
 
     expect(result.current.demoRunning).toBe(false);
   });
+
+  it('handles errors gracefully in catch block', async () => {
+    const setIsAiProcessing = vi.fn();
+    recommendationEngine.processNewDataset.mockRejectedValueOnce(new Error('Test Error'));
+    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+
+    const { result } = renderHook(() => useDemoScript(setIsAiProcessing));
+
+    await act(async () => {
+      try {
+        await result.current.runOneClickDemo();
+      } catch {}
+    });
+
+    expect(alertSpy).toHaveBeenCalledWith("Demo simulation error occurred.");
+  });
 });

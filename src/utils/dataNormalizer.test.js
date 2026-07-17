@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { normalizeStadiumData, normalizeManualIncident } from './dataNormalizer';
+import { normalizeStadiumData, normalizeManualIncident, validateAndNormalizeAiResponse } from './dataNormalizer';
 
 describe('dataNormalizer.js unit tests', () => {
   describe('normalizeStadiumData', () => {
@@ -87,5 +87,17 @@ describe('dataNormalizer.js unit tests', () => {
       expect(incident.matchTime).toBeDefined();
       expect(incident.incidents[0].gate).toBe('Gate C');
     });
+  });
+
+  test('caps confidence if missing information is present', () => {
+    const rawRec = {
+      missing_information: "Need camera feed for Gate C",
+      confidence: 80
+    };
+    const result = validateAndNormalizeAiResponse(rawRec, 'Test', '1.0', 'Model X');
+    
+    expect(result.missing_information).toBe("Need camera feed for Gate C");
+    expect(result.confidence).toBe(49);
+    expect(result.validation_status).toBe("Confidence reduced due to missing information");
   });
 });

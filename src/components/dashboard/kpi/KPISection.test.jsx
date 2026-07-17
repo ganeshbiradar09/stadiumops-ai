@@ -66,4 +66,27 @@ describe('KPI Section Components', () => {
     expect(screen.getByText(/↓/)).toBeInTheDocument();
     expect(screen.getByText(/2%/)).toBeInTheDocument();
   });
+
+  test('GatesStatusCard shows delta and prediction correctly', () => {
+    const mockSnapshot = {
+      averageQueueTime: 10,
+      maxQueueTime: 15,
+      crowdDensityLevel: 'Moderate'
+    };
+    const activeSnapshotWithDelta = {
+      ...mockSnapshot,
+      averageQueueTimeDelta: 5,
+      predictedAverageQueueTime: 12
+    };
+    render(<GatesStatusCard activeGatesCount={4} averageQueueTime={10} incidentsCount={0} activeSnapshot={activeSnapshotWithDelta} />);
+    expect(screen.getByText('↑ 5m')).toBeInTheDocument();
+    expect(screen.getByText('Pred: 12m')).toBeInTheDocument();
+
+    const activeSnapshotWithNegativeDelta = {
+      ...mockSnapshot,
+      averageQueueTimeDelta: -3
+    };
+    render(<GatesStatusCard activeGatesCount={4} averageQueueTime={10} incidentsCount={0} activeSnapshot={activeSnapshotWithNegativeDelta} />);
+    expect(screen.getByText('↓ 3m')).toBeInTheDocument();
+  });
 });

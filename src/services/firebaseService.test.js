@@ -200,4 +200,36 @@ describe('firebaseService.js unit tests with Firestore mocks', () => {
       expect(logs.length).toBe(0);
     });
   });
+
+  describe('security and input validation constraints', () => {
+    test('updateRecommendationStatus rejects invalid input', async () => {
+      await expect(service.updateRecommendationStatus('', 'Approved')).rejects.toThrow(/Security Error/);
+      await expect(service.updateRecommendationStatus('doc-1', 123)).rejects.toThrow(/Security Error/);
+    });
+
+    test('saveAuditLog rejects invalid input', async () => {
+      await expect(service.saveAuditLog(123, { detail: 'test' })).rejects.toThrow(/Security Error/);
+      await expect(service.saveAuditLog('TEST_ACTION', null)).rejects.toThrow(/Security Error/);
+    });
+  });
+
+  describe('local storage mock constraints', () => {
+    test('MockFirestore updateRecord rejects if document is missing', async () => {
+      // Create local fallback scenario directly or mock failure to force local fallback
+      vi.resetModules();
+      import.meta.env.VITE_FIREBASE_API_KEY = '';
+      const offlineService = await import('./firebaseService');
+      
+      await expect(offlineService.updateRecommendationStatus('non-existent-id', 'Approved')).rejects.toThrow(/not found/);
+    });
+
+    test('offline service saves incident locally', async () => {
+      vi.resetModules();
+      import.meta.env.VITE_FIREBASE_API_KEY = '';
+      const offlineService = await import('./firebaseService');
+      
+      const result = await offlineService.saveIncident({ gate: 'Gate A', description: 'Test' });
+      expect(result.id).toBeDefined();
+    });
+  });
 });
